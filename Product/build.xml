@@ -81,7 +81,7 @@
         </zip>
     </target>
 
-    <target name="mvnloadbundle" description="Create a bundle containing Maven artifact load files">
+    <target name="mvnloadbundle" description="Create a bundle containing Maven artifact load files" depends="-maven.version">
         <echo message="Building a bundle containing Maven artifact load files."/>
         <property name="mvnrepoload.artifact.dir" value="./target" />
         <property name="maven_root" value="${user.home}/.m2/repository/org/aurionproject" />
