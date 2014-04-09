@@ -17,7 +17,7 @@
 	<target name="copylibs" description="Copy required libraries" depends="clean,init">
 		<copy toDir="lib">
 			<fileset dir="../../../Common/CONNECTCoreLib/target">
-				<filename name="CONNECTCoreLib-5.0.0-SNAPSHOT.jar"/>
+				<filename name="CONNECTCoreLib-5.0.jar"/>
 			</fileset>
 			<fileset dir="${user.home}/.m2/repository/log4j/log4j/1.2.17">
 				<include name="*.jar"/>
