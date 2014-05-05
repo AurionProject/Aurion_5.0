@@ -26,13 +26,20 @@
  */
 package gov.hhs.fha.nhinc.direct;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Enumeration;
+
 import gov.hhs.fha.nhinc.direct.event.DirectEventLogger;
 import gov.hhs.fha.nhinc.direct.event.DirectEventType;
 import gov.hhs.fha.nhinc.mail.MailSender;
 
 import javax.mail.Address;
+import javax.mail.Header;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.log4j.Logger;
 import org.nhindirect.gateway.smtp.SmtpAgent;
 import org.nhindirect.xd.common.DirectDocuments;
 
@@ -40,6 +47,9 @@ import org.nhindirect.xd.common.DirectDocuments;
  * Used to send outbound direct messages.
  */
 public class DirectSenderImpl extends DirectAdapter implements DirectSender {
+	private static final String DATE_HEADER_FIELD = "Date";
+
+    private static final Logger LOG = Logger.getLogger(DirectSenderImpl.class);
 
     private static final String MSG_SUBJECT = "DIRECT Message";
     private static final String MSG_TEXT = "DIRECT Message body text";
@@ -59,7 +69,8 @@ public class DirectSenderImpl extends DirectAdapter implements DirectSender {
     @Override
     public void sendOutboundDirect(MimeMessage message) {
         getDirectEventLogger().log(DirectEventType.BEGIN_OUTBOUND_DIRECT, message);
-        try {
+        try {        	
+        	ensureOrigDateHeaderExistsInMimeMessage(message);
             MimeMessage processedMessage = process(message).getProcessedMessage().getMessage();
             getExternalMailSender().send(message.getAllRecipients(), processedMessage);
         } catch (Exception e) {
@@ -82,4 +93,96 @@ public class DirectSenderImpl extends DirectAdapter implements DirectSender {
             throw new DirectException("Error building and sending mime message.", e, message);
         }
     }
+    
+	/**
+     * The "origination-date" is a required message "header" field according to RFC 5322. 
+     * Make sure the message header "Date" exists in the passed in MimeMessage. If it does not
+     * exist add the header to the message.
+     * 
+     * @param mimeMessage
+     * 		Contains the MimeMessage. Upon return this message will be updated with a "Date" header if one does not exist.
+     */
+	private void ensureOrigDateHeaderExistsInMimeMessage(MimeMessage mimeMessage) {
+		if (mimeMessage != null) { 
+			try {
+				@SuppressWarnings("rawtypes")
+				Enumeration headers = mimeMessage.getAllHeaders();					
+
+				if (headers != null) {
+					boolean foundDateItem = false;
+					
+					while (headers.hasMoreElements()) {
+						Header hdr = (Header) headers.nextElement();
+
+						if (DATE_HEADER_FIELD.equalsIgnoreCase(hdr.getName())) {
+							foundDateItem = true;
+							
+							LOG.debug("Found header item '" + DATE_HEADER_FIELD + "' in mimeMessage. Value: '" + hdr.getValue() + "'");
+							
+							break;
+						}
+					}
+					
+					if (!foundDateItem) {						
+						String datePattern = "E, dd MMM yyyy HH:mm:ss Z";
+						SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern);
+						
+						String dateValue = dateFormat.format(new Date());
+						
+						// Add the "Date" header to the mime message
+						mimeMessage.setHeader(DATE_HEADER_FIELD, dateValue);								
+						
+						String message = "\nDid NOT find header item '" + DATE_HEADER_FIELD + "' in mimeMessage. " +
+								"Adding header '" + DATE_HEADER_FIELD + "' with value: '" + dateValue + "' to the mimeMessage.";
+						
+						LOG.debug(message);
+					}
+				}
+			} catch (MessagingException e) {
+				LOG.error("Error occurred in adding 'Date' message header item to mimeMessage." + e.getMessage());
+						
+				e.printStackTrace();
+			}
+			
+			logDebugMessageHeaderItems(mimeMessage);			
+		}				
+	}
+
+	/**
+     * Log debug header information about the mime message.
+     * 
+     * @param mimeMessage
+     * 		Contains the MimeMessage for which to log header information.
+     */
+    private void logDebugMessageHeaderItems(MimeMessage mimeMessage) {
+    	if (LOG.isDebugEnabled()) {
+        	StringBuilder buf = new StringBuilder("\nMimeMessage Headers:\n");
+        	
+    		if (mimeMessage != null) {			
+    			try {
+    				@SuppressWarnings("rawtypes")
+    				Enumeration headers = mimeMessage.getAllHeaders();
+    				
+    				if (headers != null) {
+    					while (headers.hasMoreElements()) {
+    						Header hdr = (Header) headers.nextElement();
+
+    						buf.append("\tName: '" + hdr.getName() + "'  Value: '" + hdr.getValue() + "'\n");
+    					}
+    				} else {
+    					buf.append("\tHeaders are NULL \n");
+    				}
+    			} catch (MessagingException e) {
+    				LOG.debug("Error occurred in logging mime message headers. " + e.getMessage());
+    			}					
+    		} else {
+    			buf.append("\tHeaders are NULL \n");
+    		}  	
+        	
+    		LOG.debug(buf.toString());	    		
+		}
+	}    
+    
+    
+    
 }
