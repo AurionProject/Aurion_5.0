@@ -87,6 +87,7 @@ public class XDRPolicyTransformHelper {
         String patId = PatientIdFormatUtil.parsePatientId(encodedPatientId);
 
         ResourceType resource = new ResourceType();
+        boolean resourceAdded = false;
         AttributeHelper attrHelper = new AttributeHelper();
         if (patId != null && assigningAuthorityId != null) {
             resource.getAttribute().add(
@@ -98,6 +99,7 @@ public class XDRPolicyTransformHelper {
                     attrHelper.attributeFactory(PatientIdAttributeId, Constants.DataTypeString, patId));
 
             request.getResource().add(resource);
+            resourceAdded = true;
         }
         
         // Set the receiving home community ID.
@@ -109,6 +111,9 @@ public class XDRPolicyTransformHelper {
 	            resource.getAttribute().add(
 	                    attrHelper.attributeFactory(Constants.HomeCommunityAttributeId, Constants.DataTypeString,
 	                    							homeCommunityId.getHomeCommunityId()));
+	            if(!resourceAdded) {
+	                request.getResource().add(resource);
+	            }
 	        }
         }
 

@@ -140,7 +140,7 @@ public class StandardOutboundDocSubmission implements OutboundDocSubmission {
             String senderHCID = getSubjectHelper().determineSendingHomeCommunityId(assertion.getHomeCommunity(),
                     assertion);
             String receiverHCID = getNhinTargetHomeCommunityId(request);
-
+            LOG.debug("Receiving home community id: " + receiverHCID);
             isValid = getXDRPolicyChecker().checkXDRRequestPolicy(request.getProvideAndRegisterDocumentSetRequest(),
                     assertion, senderHCID, receiverHCID, NhincConstants.POLICYENGINE_OUTBOUND_DIRECTION);
         } else {
