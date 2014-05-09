@@ -199,6 +199,17 @@
                             <file>${basedir}/repo/org/nhind/xd-common/1.2-CONNECT/xd-common-1.2-CONNECT.jar</file>
                         </configuration>
                     </execution>
+                     <execution>
+                        <id>org.connectopensource.thirdparty.org.nhind.agent:agent-1.5.3.Aurion</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <pomFile>${basedir}/repo/org/nhind/agent/1.5.3.Aurion/agent-1.5.3.Aurion.pom</pomFile>
+                            <file>${basedir}/repo/org/nhind/agent/1.5.3.Aurion/agent-1.5.3.Aurion.jar</file>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
