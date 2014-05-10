@@ -288,9 +288,9 @@ public class AuditDataTransformHelperTest {
         expResult.setParticipantObjectTypeCodeRole(objectTypeCodeRole);
         expResult.setParticipantObjectIDTypeCode(objectIdTypeCode);
         expResult.setParticipantObjectID(ObjectId);
-        char[] objectQueryB64 = Base64Coder.encode(objectQuery);
-        byte[] objectQueryBytes = new String(objectQueryB64).getBytes();
-        expResult.setParticipantObjectQuery(objectQueryBytes);
+        //char[] objectQueryB64 = Base64Coder.encode(objectQuery);
+        //byte[] objectQueryBytes = new String(objectQueryB64).getBytes();
+        expResult.setParticipantObjectQuery(objectQuery);
 
         ParticipantObjectIdentificationType result = AuditDataTransformHelper.createParticipantObjectIdentification(
         		objectTypeCode, 

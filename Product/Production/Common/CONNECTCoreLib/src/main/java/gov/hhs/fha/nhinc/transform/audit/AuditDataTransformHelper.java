@@ -843,36 +843,11 @@ public class AuditDataTransformHelper {
 	    // Set the Participation Object Id Type code
 	    partObjId.setParticipantObjectIDTypeCode(objectIdTypeCode);
 	
-	    // Set the Partipant Object Id (documentId)
-	    if (objectId != null) {
-	        partObjId.setParticipantObjectID(objectId);
-	    }
-	    if (data != null) {
-	    	// Convert to Base64
-	    	char[] queryParamsB64 = Base64Coder.encode(data);
-	    	// Transform char[] to byte[]
-	    	byte[] QueryParamsBytes = new String(queryParamsB64).getBytes();
-	    	partObjId.setParticipantObjectQuery(QueryParamsBytes);
-	    }
-	    else {
-	    	partObjId.setParticipantObjectQuery(null);
-	    }
+	    // Set the Partipant Object Id (documentId) and the ParticipantQuery object
+	    partObjId.setParticipantObjectID(objectId);
+	    partObjId.setParticipantObjectQuery(data);
 	    
 	    return partObjId;
-	}
-	/*
-	 * Create a ParticipantObjectIdentification Record from the Active Sub-set of values in the Participant Record	 
-	 */
-	public static ParticipantObjectIdentificationType createParticipantObjectIdentification(ParticipantRecord participant) {
-		ParticipantObjectIdentificationType participantRecord = new ParticipantObjectIdentificationType();
-		participantRecord.setParticipantObjectTypeCode(participant.getParticipantTypeCode());
-		participantRecord.setParticipantObjectTypeCodeRole(participant.getParticipantRoleCode());
-		participantRecord.setParticipantObjectIDTypeCode(participant.getParticipantIdCodedValue());
-		participantRecord.setParticipantObjectID(participant.getParticipantId());
-		participantRecord.setParticipantObjectQuery(participant.getMessageContent());
-		participantRecord.setParticipantObjectName(participant.getParticipantName());
-			
-		return participantRecord;
 	}
 
 	/**

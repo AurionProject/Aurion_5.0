@@ -57,10 +57,13 @@ public class AuditRepositoryProxyWebServiceSecuredImpl implements AuditRepositor
         LOG.debug("Entering AuditRepositoryProxyWebServiceSecured.auditLog(...)");
         AcknowledgementType result = new AcknowledgementType();
         
-        LogEventSecureRequestType secureRequest = new LogEventSecureRequestType();
-        if (request.getAuditMessage() == null) {
-            LOG.error("Audit Request is null");
+        // Check the parameters
+        if (request == null  || request.getAuditMessage() == null) {
+        	LOG.error("LogEventRequestType object was null. Cannot audit a null message");
+        	return null;
         }
+        
+        LogEventSecureRequestType secureRequest = new LogEventSecureRequestType();
         
         secureRequest.setAuditMessage(request.getAuditMessage());
         secureRequest.setDirection(request.getDirection());

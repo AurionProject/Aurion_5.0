@@ -123,6 +123,8 @@ public class AuditRepositoryDAO {
 			   	LOG.error(this.getClass().getName() + "..insertAuditRepositoryRecord(): Failed to obtain a session factory");
 	        }
             auditRec.setTimeStamp(new Date());
+            AdvancedAuditRecord adv = auditRec.getAdvancedAuditRecord();
+
             saveRet = session.save(auditRec);
             Class c = saveRet.getClass();
             if (c.getName().equals("java.lang.Long")) {

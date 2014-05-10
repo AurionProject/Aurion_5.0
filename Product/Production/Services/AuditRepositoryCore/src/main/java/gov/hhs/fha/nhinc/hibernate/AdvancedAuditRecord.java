@@ -1,5 +1,8 @@
 package gov.hhs.fha.nhinc.hibernate;
 
+import java.sql.Clob;
+
+
 /**
  * 
  * AdvancedAuditRecord.java
@@ -22,6 +25,8 @@ public class AdvancedAuditRecord {
 	private String userRoles = null;
 	private String sourceSystem = null;
 	private String sourceCommunity = null;
+	private Clob queryParams = null;
+	private Clob messageAudited = null;
 	private AuditRepositoryRecord auditRepositoryRecord = null;
 	
 	// Auto generated "getters" and "setters"
@@ -87,10 +92,25 @@ public class AdvancedAuditRecord {
 	public String getSourceCommunity() {
 		return sourceCommunity;
 	}
+
+	public Clob getQueryParams() {
+		return queryParams;
+	}
+	public void setQueryParams(Clob queryParams) {
+		this.queryParams = queryParams;
+	}
+	public Clob getMessageAudited() {
+		return messageAudited;
+	}
+	public void setMessageAudited(Clob messageAudited) {
+		this.messageAudited = messageAudited;
+	}
+
 	public AuditRepositoryRecord getAuditRepositoryRecord() {
 		return auditRepositoryRecord;
 	}
 	public void setAuditRepositoryRecord(AuditRepositoryRecord auditRepositoryRecord) {
 		this.auditRepositoryRecord = auditRepositoryRecord;
 	}
+
 }

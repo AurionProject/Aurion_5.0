@@ -5,6 +5,7 @@ import gov.hhs.fha.nhinc.hibernate.AdvancedAuditRecord;
 import gov.hhs.fha.nhinc.hibernate.AuditRepositoryRecord;
 import gov.hhs.fha.nhinc.transform.audit.AuditDataTransformConstants;
 import gov.hhs.fha.nhinc.transform.audit.AuditDataTransformHelper;
+import gov.hhs.fha.nhinc.util.Base64Coder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -113,11 +114,19 @@ public class AuditTestHelper {
     	record1.setSubsystem("entity");
     	record1.setUserName("Edward S. Sullivan");
     	record1.setUserRoles("NURSE PRACTIONER");
+    	// Simulate queryParams
+    	char [] encodedQuery = Base64Coder.encode(generateRandomByteArray(98));
+    	String  sEncodedQuery = new String(encodedQuery);
+    	record1.setQueryParams(Hibernate.createClob(sEncodedQuery));
+    	// Simulate a message
+    	char [] encodedMessage = Base64Coder.encode((generateRandomByteArray(292)));
+    	String sEncodedMessage = new String(encodedMessage);
+    	record1.setMessageAudited(Hibernate.createClob((sEncodedMessage)));
     	return record1;
     }
 
     // The following two method fake a string of bytes representing a message.
-    public static byte[] generateRandomByteArray(int size){
+    public static byte[] generateRandomByteArray(int size) {
     	return getRandomByteArray(size);
     }
     

@@ -32,27 +32,30 @@ import gov.hhs.fha.nhinc.common.auditlog.LogDocRetrieveResultRequestType;
 import gov.hhs.fha.nhinc.common.auditlog.LogEventRequestType;
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
 import gov.hhs.fha.nhinc.common.nhinccommon.UserType;
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.transform.marshallers.JAXBContextHandler;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType.DocumentRequest;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType.DocumentResponse;
+import gov.hhs.fha.nhinc.largefile.LargeFileUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.apache.log4j.Logger;
-
-import gov.hhs.fha.nhinc.properties.PropertyAccessException;
-import gov.hhs.fha.nhinc.properties.PropertyAccessor;
-
 
 import com.services.nhinc.schema.auditmessage.AuditMessageType;
 import com.services.nhinc.schema.auditmessage.AuditMessageType.ActiveParticipant;
@@ -91,7 +94,6 @@ public class DocumentRetrieveTransforms {
     	}
     	return redactionStatus;
 	}
-
     /**
      * 
      * @param message
@@ -111,11 +113,16 @@ public class DocumentRetrieveTransforms {
         	return null;
         }
         
-        String _interface = message.getInterface();
+        RetrieveDocumentSetRequestType retrieveDocumentSet = message.getMessage().getRetrieveDocumentSetRequest();
+        List<DocumentRequest> documentRequestList = retrieveDocumentSet. getDocumentRequest();
+        
+        
+        String _interface = message.getInterface(); 
         String direction = message.getDirection();
         response.setDirection(direction);
         response.setInterface(_interface);
 
+        
         UserType userInfo = null;
         AssertionType assertion = null;
         if (message.getMessage() != null && message.getMessage().getAssertion() != null) {
@@ -420,7 +427,7 @@ public class DocumentRetrieveTransforms {
         String messageId = null;
 
         RetrieveDocumentSetResponseType actualResponse = message.getMessage().getRetrieveDocumentSetResponse();
-        messageBytes = null; //marshallDocumentRetrieveResponseMessage(actualResponse, forceRedaction);
+        messageBytes = marshallDocumentRetrieveResponseMessage(actualResponse, forceRedaction);
         
         messageId = assertion.getMessageId();
         
@@ -465,17 +472,12 @@ public class DocumentRetrieveTransforms {
             ihe.iti.xds_b._2007.ObjectFactory factory = new ihe.iti.xds_b._2007.ObjectFactory();
             JAXBElement oJaxbElement = factory.createRetrieveDocumentSetRequest(message);
             marshaller.marshal(oJaxbElement, baOutStrm);
-            baOutStrm.close();
+            // baOutStrm.close(); This call does nothing - thus removed.
             messageBytes = baOutStrm.toByteArray();
         } catch (JAXBException e) {
         	// The audit entry should not fail just because the JAXB marshalling failed here
             e.printStackTrace();
             LOG.error("Marshalling the RetrieveDocumentSetRequestType message generated a run-time exception. Message not logged.");
-        }
-        catch (IOException e) {
-        	// The audit entry should not fail just because the JAXB marshalling failed here
-            e.printStackTrace();
-            LOG.warn("Marshalling the RetrieveDocumentSetRequestType message generated an I/O Exception. Stream not closed.");
         }
     	return messageBytes;
     }
@@ -510,8 +512,23 @@ public class DocumentRetrieveTransforms {
 	            Marshaller marshaller = jc.createMarshaller();
 	            baOutStrm.reset();
 	            ihe.iti.xds_b._2007.ObjectFactory factory = new ihe.iti.xds_b._2007.ObjectFactory();
+
+	            // Take the DocumentResponses from the message and add them to a new RetrieveDocumentSetResponseType
+	            RetrieveDocumentSetResponseType retrieveResponse =  new RetrieveDocumentSetResponseType();
+	            List<DocumentResponse> responseList = message.getDocumentResponse();
+	            Iterator<DocumentResponse> docIterator = responseList.iterator();
+	            while (docIterator.hasNext()) {
+	            	DocumentResponse docResponse = (DocumentResponse) docIterator.next();
+	            	retrieveResponse.getDocumentResponse().add(docResponse);
+	            }
+
+				// Attempt to get MTOM attachements for logging - not successful -- yet	            
+	            //getRawDataFromDocuments(retrieveResponse);           
+	            	            
+	            // Serialize the object
 	            @SuppressWarnings("rawtypes")
-	            JAXBElement oJaxbElement = factory.createRetrieveDocumentSetResponse(message);
+	            JAXBElement oJaxbElement = factory.createRetrieveDocumentSetResponse(retrieveResponse);  
+
 	            marshaller.marshal(oJaxbElement, baOutStrm);
 	            baOutStrm.close();
 	            messageBytes = baOutStrm.toByteArray();
@@ -524,7 +541,7 @@ public class DocumentRetrieveTransforms {
 	        catch (IOException e) {
 	        	// The audit entry should not fail just because the JAXB marshalling failed here
 	            e.printStackTrace();
-	            LOG.warn("Marshalling the marshallDocumentRetrieveResponse message generated an I/O Exception. Stream not closed.");
+	            LOG.warn("Marshalling the marshallDocumentRetrieveResponse message generated an I/O Exception. Document retrieve message not logged.");
 	        }
         }
 		return messageBytes;
@@ -545,4 +562,23 @@ public class DocumentRetrieveTransforms {
         LOG.debug("Exiting... DocumentRetrieveTransforms.isDocRetrieveResponseBodyRedactionEnabled returning: " + redactionEnabled);
         return new Boolean(redactionEnabled);
     }
+    
+    /**
+     * Parses the payload as a file URI and converts it into data handlers pointing to the actual documents.
+     * 
+     * @param msg
+     * @throws IOException
+     * @throws URISyntaxException
+     * 
+
+    private static void getRawDataFromDocuments(RetrieveDocumentSetResponseType msg) 
+    		throws IOException {
+        LargeFileUtils lfHandle = LargeFileUtils.getInstance();
+    	List<DocumentResponse> docResponseList = msg.getDocumentResponse();
+        for (DocumentResponse docResponse : docResponseList) {
+        	byte [] rawData = new byte[0];
+        	DataHandler dh = docResponse.getDocument();
+			rawData = lfHandle.convertToBytes(dh);
+       }
+    }     */
 }

@@ -21,7 +21,7 @@ CREATE TABLE nhincuser.auditrepository
     receiverPatientId varchar2(128),
     senderPatientId varchar2(128),
     communityId varchar2(255),
-	purposeOfUse varchar2 (32),
+    purposeOfUse varchar2 (32),
     messageType varchar2(100) NOT NULL,
     message BLOB,
     PRIMARY KEY (id)
@@ -38,6 +38,8 @@ CREATE TABLE nhincuser.advanced_audit
     user_roles varchar2(64),
     source_system varchar2(64),
     source_community varchar2(64),
+    query_params CLOB,
+    message_audited CLOB,
     PRIMARY KEY (audit_id)
 );
 

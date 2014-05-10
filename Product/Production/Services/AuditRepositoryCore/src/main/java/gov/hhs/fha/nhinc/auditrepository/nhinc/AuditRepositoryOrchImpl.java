@@ -35,8 +35,8 @@ import gov.hhs.fha.nhinc.hibernate.AuditRepositoryDAO;
 import gov.hhs.fha.nhinc.hibernate.AuditRepositoryRecord;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.transform.audit.AuditDataTransformConstants;
-import gov.hhs.fha.nhinc.transform.audit.ParticipantRecord;
 import gov.hhs.fha.nhinc.transform.marshallers.JAXBContextHandler;
+import gov.hhs.fha.nhinc.util.Base64Coder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -59,8 +59,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Hibernate;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import com.services.nhinc.schema.auditmessage.AuditMessageType;
 import com.services.nhinc.schema.auditmessage.AuditMessageType.ActiveParticipant;
@@ -310,7 +308,7 @@ public class AuditRepositoryOrchImpl {
         
         List<ParticipantObjectIdentificationType> participantObjectIdentificationList = auditMessage.getParticipantObjectIdentification();
         
-        ParticipantRecord document = null, patient = null, data = null, query = null, job = null, community = null;
+        ParticipantObjectIdentificationType patient = null, job = null, query = null, document = null, data = null, community = null;
         
         if (participantObjectIdentificationList != null && participantObjectIdentificationList.size() > 0) {
 			for (ParticipantObjectIdentificationType participantObjectEntry: participantObjectIdentificationList ){
@@ -326,115 +324,99 @@ public class AuditRepositoryOrchImpl {
 	            	 */
 	                partObjectTypeCode = participantObjectEntry.getParticipantObjectTypeCode();
 	                partObjectTypeCodeRole = participantObjectEntry.getParticipantObjectTypeCodeRole();
+	                
 	                if ((partObjectTypeCode == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_PERSON) && 
 	                		(partObjectTypeCodeRole == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_ROLE_PATIENT)){
-	            		patient = new ParticipantRecord();
-	            		patient.setParticipantTypeCode(partObjectTypeCode);
-	            		patient.setParticipantRoleCode(partObjectTypeCodeRole);
-	            		patient.setParticipantId(participantObjectEntry.getParticipantObjectID());
-	            		patient.setParticipantName(participantObjectEntry.getParticipantObjectName());
-	            		patient.setParticipantIdCodedValue(participantObjectEntry.getParticipantObjectIDTypeCode());
+	                	patient = captureParticipantRecord(participantObjectEntry);
 	                }
 	                else if ((partObjectTypeCode == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_SYSTEM) && 
 	                		(partObjectTypeCodeRole == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_ROLE_JOB)) {
-	            		job = new ParticipantRecord();
-	            		job.setParticipantTypeCode(partObjectTypeCode);
-	            		job.setParticipantRoleCode(partObjectTypeCodeRole);
-	            		job.setParticipantId(participantObjectEntry.getParticipantObjectID());
-	            		job.setParticipantName(participantObjectEntry.getParticipantObjectName());
-	            		job.setParticipantIdCodedValue(participantObjectEntry.getParticipantObjectIDTypeCode());
+	                	job = captureParticipantRecord(participantObjectEntry);
 	                }
 	                else if ((partObjectTypeCode == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_SYSTEM) && 
 	                		(partObjectTypeCodeRole == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_ROLE_QUERY)) {
-	            		query = new ParticipantRecord();
-	            		query.setParticipantTypeCode(partObjectTypeCode);
-	            		query.setParticipantRoleCode(partObjectTypeCodeRole);
-	            		query.setParticipantId(participantObjectEntry.getParticipantObjectID());
-	            		query.setParticipantName(participantObjectEntry.getParticipantObjectName());
-	            		query.setParticipantIdCodedValue(participantObjectEntry.getParticipantObjectIDTypeCode());
+	                	query = captureParticipantRecord(participantObjectEntry);
 	                }
 	                else if ((partObjectTypeCode == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_SYSTEM) && 
 	                		(partObjectTypeCodeRole == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_ROLE_REPORT)) {
-	            		document = new ParticipantRecord();
-	            		document.setParticipantTypeCode(partObjectTypeCode);
-	            		document.setParticipantRoleCode(partObjectTypeCodeRole);
-	            		document.setParticipantName(participantObjectEntry.getParticipantObjectName());
-	            		document.setParticipantId(participantObjectEntry.getParticipantObjectID());
-	            		document.setParticipantIdCodedValue(participantObjectEntry.getParticipantObjectIDTypeCode());
+	            		document = captureParticipantRecord(participantObjectEntry);
 	                }
 	                else if ((partObjectTypeCode == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_SYSTEM) &&
 	                		(partObjectTypeCodeRole == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_ROLE_DATA_TRANSPORT)) {
-	            		data = new ParticipantRecord();
-	            		data.setParticipantTypeCode(partObjectTypeCode);
-	            		data.setParticipantRoleCode(partObjectTypeCodeRole);
-	            		data.setParticipantId(participantObjectEntry.getParticipantObjectID());
-	            		data.setParticipantIdCodedValue(participantObjectEntry.getParticipantObjectIDTypeCode());
-	            		data.setParticipantName(participantObjectEntry.getParticipantObjectName());
-	            		data.setMessageContent(participantObjectEntry.getParticipantObjectQuery());
+	            		data = captureParticipantRecord(participantObjectEntry);
 	                }
 	                else if ((partObjectTypeCode == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_SYSTEM) &&
 	                		(partObjectTypeCodeRole == AuditDataTransformConstants.PARTICIPANT_OBJECT_TYPE_CODE_ROLE_COMMUNITY)) {
-	            		community = new ParticipantRecord();
-	            		community.setParticipantTypeCode(partObjectTypeCode);
-	            		community.setParticipantRoleCode(partObjectTypeCodeRole);
-	            		community.setParticipantId(participantObjectEntry.getParticipantObjectID());
-	            		community.setParticipantIdCodedValue(participantObjectEntry.getParticipantObjectIDTypeCode());
-	            		community.setParticipantName(participantObjectEntry.getParticipantObjectName());
+	            		community = captureParticipantRecord(participantObjectEntry);
 	                }
 	            }
 			}
         }
 		// The preference order for selecting the ParticipantObjectIdentification that will be persisted is:
     		
-        boolean outputObjectSelected = false;
+        boolean participantObjectSelected = false;
+        ParticipantObjectIdentificationType selected = null;
   
-	    if ((document != null) && (! outputObjectSelected)) { 
-	    	baseAuditRecord.setParticipationTypeCode(document.getParticipantTypeCode());
-	    	baseAuditRecord.setParticipationTypeCodeRole(document.getParticipantRoleCode());
-	    	baseAuditRecord.setReceiverPatientId(document.getParticipantId());
-	    	baseAuditRecord.setParticipationIDTypeCode(document.getParticipantIdCode());
-	    	LOG.debug("Document participant record selected");
-	    	outputObjectSelected = true;
+	    if ((document != null) && (! participantObjectSelected)) { 
+	    	baseAuditRecord.setParticipationTypeCode(document.getParticipantObjectTypeCode());
+	    	baseAuditRecord.setParticipationTypeCodeRole(document.getParticipantObjectTypeCodeRole());
+	    	baseAuditRecord.setReceiverPatientId(document.getParticipantObjectID());
+	    	baseAuditRecord.setParticipationIDTypeCode(document.getParticipantObjectIDTypeCode().getCode());
+	    	LOG.debug("Document information found in the Audit Message");
+	    	participantObjectSelected = true;
+	    	selected = document;
         }
 
-        if ((job != null) && (! outputObjectSelected)) {
-            baseAuditRecord.setParticipationTypeCode(job.getParticipantTypeCode());
-            baseAuditRecord.setParticipationTypeCodeRole(job.getParticipantRoleCode());
-        	baseAuditRecord.setReceiverPatientId(job.getParticipantId());
-            baseAuditRecord.setParticipationIDTypeCode(job.getParticipantIdCode());
-            LOG.debug("Job participant record selected");
-            outputObjectSelected = true;
+        if ((job != null) && (! participantObjectSelected)) {
+	    	baseAuditRecord.setParticipationTypeCode(job.getParticipantObjectTypeCode());
+	    	baseAuditRecord.setParticipationTypeCodeRole(job.getParticipantObjectTypeCodeRole());
+	    	baseAuditRecord.setReceiverPatientId(job.getParticipantObjectID());
+	    	baseAuditRecord.setParticipationIDTypeCode(job.getParticipantObjectIDTypeCode().getCode());
+            LOG.debug("Job information found in the Audit Message");
+            participantObjectSelected = true;
+            selected = job;
         }
         
-        if ((patient != null) && (!outputObjectSelected)){
-            baseAuditRecord.setParticipationTypeCode(patient.getParticipantTypeCode());
-            baseAuditRecord.setParticipationTypeCodeRole(patient.getParticipantRoleCode());
-        	baseAuditRecord.setReceiverPatientId(patient.getParticipantId());
-            baseAuditRecord.setParticipationIDTypeCode(patient.getParticipantIdCode());
-            LOG.debug("Patient participant record selected");
-            outputObjectSelected = true;
+        if ((patient != null) && (!participantObjectSelected)){
+	    	baseAuditRecord.setParticipationTypeCode(patient.getParticipantObjectTypeCode());
+	    	baseAuditRecord.setParticipationTypeCodeRole(patient.getParticipantObjectTypeCodeRole());
+	    	baseAuditRecord.setReceiverPatientId(patient.getParticipantObjectID());
+	    	baseAuditRecord.setParticipationIDTypeCode(patient.getParticipantObjectIDTypeCode().getCode());
+            LOG.debug("Patient Information found in the Audit Message");
+            participantObjectSelected = true;
+            selected = patient;
         }
         
-        if ((query != null)&& (! outputObjectSelected)) {
-            baseAuditRecord.setParticipationTypeCode(query.getParticipantTypeCode());
-            baseAuditRecord.setParticipationTypeCodeRole(query.getParticipantRoleCode());
-        	baseAuditRecord.setReceiverPatientId(query.getParticipantId());
-            baseAuditRecord.setParticipationIDTypeCode(query.getParticipantIdCode());
-            LOG.debug("Query participant record selected");
-            outputObjectSelected = true;
+        if ((query != null) && (! participantObjectSelected)) {
+	    	baseAuditRecord.setParticipationTypeCode(query.getParticipantObjectTypeCode());
+	    	baseAuditRecord.setParticipationTypeCodeRole(query.getParticipantObjectTypeCodeRole());
+	    	baseAuditRecord.setReceiverPatientId(query.getParticipantObjectID());
+	    	baseAuditRecord.setParticipationIDTypeCode(query.getParticipantObjectIDTypeCode().getCode());
+            LOG.debug("Query Params found in the Audit Message");
+            participantObjectSelected = true;
+            selected = query;
         }
 
+        if ((community != null) && (! participantObjectSelected)) {
+	    	baseAuditRecord.setParticipationTypeCode(community.getParticipantObjectTypeCode());
+	    	baseAuditRecord.setParticipationTypeCodeRole(community.getParticipantObjectTypeCodeRole());
+	    	baseAuditRecord.setReceiverPatientId(community.getParticipantObjectID());
+	    	baseAuditRecord.setParticipationIDTypeCode(community.getParticipantObjectIDTypeCode().getCode());
+            LOG.debug("Query Params found in the Audit Message");
+            participantObjectSelected = true;
+            selected = community;
+        }
         /*
          *  If the community Id was passed in the community ParticipantObjectIdentification record use it
          *  otherwise, use the value that came through the auditSourceRecords above
          */
         
         if (community != null) {
-        	if (community.getParticipantId() != null) {
-        		baseAuditRecord.setCommunityId(community.getParticipantId());
+        	if (community.getParticipantObjectID() != null) {
+        		baseAuditRecord.setCommunityId(community.getParticipantObjectID());
         	}
-        	if ((community.getParticipantName() != null) && (community.getParticipantName().length() > 0)) {
-        		advancedAuditRecord.setSourceCommunity(community.getParticipantName());
+        	if ((community.getParticipantObjectName() != null) && (community.getParticipantObjectName().length() > 0)) {
+        		advancedAuditRecord.setSourceCommunity(community.getParticipantObjectName());
         		communityNameFound = true;
         	}
         }
@@ -451,31 +433,65 @@ public class AuditRepositoryOrchImpl {
         	advancedAuditRecord.setSourceCommunity(senderCommunityName);
         	communityNameFound = true;
         }
-	        
-        // When we have a data object we always take the Message Being Audited from it
-        if (data != null) {
-        	if(data.getMessageContent() != null && data.getMessageContent().length > 0) {
-        		baseAuditRecord.setMessage(Hibernate.createBlob(data.getMessageContent()));
-        	}
-        	if(data.getParticipantId() != null && data.getParticipantId().length() > 0) {
-        		String messageId = data.getParticipantId();
-        		if (messageId.startsWith("urn:uuid:")) {
-        			messageId = messageId.substring(9);
-        		}
-        		advancedAuditRecord.setMessageId(messageId);
-        		messageIdFound = true;
-        	}
+
+    	// Grab the messageID if available
+        if(data != null && data.getParticipantObjectID() != null && data.getParticipantObjectID().length() > 0) {
+    		String messageId = data.getParticipantObjectID();
+    		if (messageId.startsWith("urn:uuid:")) {
+    			messageId = messageId.substring(9);
+    		}
+    		advancedAuditRecord.setMessageId(messageId);
+    		messageIdFound = true;
+    	}
+    	// If query params were passed, then we fill in the query_params field in the advanved_audit table
+        if (query != null && query.getParticipantObjectQuery() != null && query.getParticipantObjectQuery().length > 0) {
+        	char[] encodedQuery = Base64Coder.encode(query.getParticipantObjectQuery());
+        	String sEncodedQuery = new String(encodedQuery);
+        	advancedAuditRecord.setQueryParams(Hibernate.createClob(sEncodedQuery));
         }
-        if (! outputObjectSelected) {
+        // Now we deal with the message being audited itself
+        // The way this is handled is largely for the Message Auditing in Aurion 4.1 and earlier
+        byte[] messageBeingAudited = null;
+        
+        //This represents the content of the message being audited - not the Audit Message itself
+        if (data != null  && data.getParticipantObjectQuery() != null && data.getParticipantObjectQuery().length > 0) {
+        	messageBeingAudited = data.getParticipantObjectQuery();
+        }
+        
+        // When we have a data object we always take the Message Being Audited from it.
+		// For Aurion 4.1 compatability we have to do special processing.
+        if (messageBeingAudited!= null && participantObjectSelected) {
+        	// This is for compatibility with the old world.
+        	// Use fields from everything from the selected record above except for ObjectQuery 
+        	// which must be the AuditMessage to be compatible with Aurion 4.1
+       		ParticipantObjectIdentificationType reconstituteParticipantObject = new ParticipantObjectIdentificationType();
+        	reconstituteParticipantObject.setParticipantObjectTypeCode(selected.getParticipantObjectTypeCode());
+        	reconstituteParticipantObject.setParticipantObjectTypeCodeRole(selected.getParticipantObjectTypeCodeRole());
+        	reconstituteParticipantObject.setParticipantObjectID(selected.getParticipantObjectID());
+        	reconstituteParticipantObject.setParticipantObjectName(selected.getParticipantObjectName());
+        	reconstituteParticipantObject.setParticipantObjectIDTypeCode(selected.getParticipantObjectIDTypeCode());
+        	reconstituteParticipantObject.setParticipantObjectQuery(messageBeingAudited);
+        		
+        	//Remove any existing participant objects and add this one - backwarads compatability audit_repository table
+        	auditMessage.getParticipantObjectIdentification().clear();
+        	auditMessage.getParticipantObjectIdentification().add(reconstituteParticipantObject);
+        }
+        
+        if (! participantObjectSelected) {
         	LOG.error(this.getClass().getName() +".logAudit(): No base ParticipantObjectRecord found - some columns in the auditrepo.auditrepository table will be empty.");
         }    
-    
-		// For messages other than PD, DQ, DR and XDR we do what was done in the past
-		// and wrap up the audit Message for storage in the audit record        
+        
 		if (baseAuditRecord.getMessage() == null) {
         	baseAuditRecord.setMessage(getBlobFromAuditMessage(mess.getAuditMessage()));
 		}
-
+		// A copy of just the message being audited is placed in the advanced audit table
+		// Hopefully one day the audit_repository table can be abandoned all-together.
+ 		if ((advancedAuditRecord.getMessageAudited() == null) && (messageBeingAudited != null)) {
+ 			char[] encodedMessage = Base64Coder.encode(messageBeingAudited);
+ 			String sEncodedMessage = new String(encodedMessage);
+			advancedAuditRecord.setMessageAudited(Hibernate.createClob(sEncodedMessage));
+		}
+		
         EventIdentificationType eventIdentification = auditMessage.getEventIdentification();
      
         if (eventIdentification.getEventTypeCode() != null) {
@@ -540,10 +556,9 @@ public class AuditRepositoryOrchImpl {
 
         Long recordId = auditDAO.insertAuditRepositoryRecord(baseAuditRecord);
 
-        AcknowledgementType response = null;
-        response = new AcknowledgementType();
-        if (recordId.longValue() > 0) {
-            response.setMessage("Created Message Audit Record in Database. RecordId = " + recordId.longValue());
+        AcknowledgementType response = new AcknowledgementType();
+        if (recordId != null && recordId.longValue() > 0) {
+        	response.setMessage("Created Message Audit Record in Database. RecordId = " + recordId.longValue());
         } 
         else {
             response.setMessage("Unable to create Message Audit Record in Database...");
@@ -554,30 +569,52 @@ public class AuditRepositoryOrchImpl {
     }
     
     /*
+     * Populates a new ParticipantObjectIdentificationType record based on what records are found in the list
+     */
+    private ParticipantObjectIdentificationType captureParticipantRecord (final ParticipantObjectIdentificationType rec) {
+    	ParticipantObjectIdentificationType participantObject = new ParticipantObjectIdentificationType();
+    	participantObject.setParticipantObjectTypeCode(rec.getParticipantObjectTypeCode());
+    	participantObject.setParticipantObjectTypeCodeRole(rec.getParticipantObjectTypeCodeRole());
+    	participantObject.setParticipantObjectID(rec.getParticipantObjectID());
+    	participantObject.setParticipantObjectIDTypeCode(rec.getParticipantObjectIDTypeCode());
+    	participantObject.setParticipantObjectName(rec.getParticipantObjectName());
+    	participantObject.setParticipantObjectQuery(rec.getParticipantObjectQuery());
+		
+    	// These fields are generally not now used..
+    	participantObject.setParticipantObjectIDTypeCode(rec.getParticipantObjectIDTypeCode());
+    	participantObject.setParticipantObjectDataLifeCycle(rec.getParticipantObjectDataLifeCycle());
+    	
+    	return participantObject;
+    }
+		
+    /*
      * Ouch!  This is the Connect/Aurion method that creates a BLOB for storage in the Audit Record
      * 
      * But Why would you want to store the audit message itself, would it not be better to store the message being audited?
+     * YES it would but the original CONNECT audit code stored the auditMessage with the message being audited inside it,
+     * so for backwards compatability we do the same.
      */
 
     private Blob getBlobFromAuditMessage(com.services.nhinc.schema.auditmessage.AuditMessageType mess) {
-        Blob eventMessage = null; // Not Implemented
+        Blob auditMessageBlob = null; // Not Implemented
         try {
             JAXBContextHandler oHandler = new JAXBContextHandler();
             JAXBContext jc = oHandler.getJAXBContext("com.services.nhinc.schema.auditmessage");
             Marshaller marshaller = jc.createMarshaller();
             ByteArrayOutputStream baOutStrm = new ByteArrayOutputStream();
             baOutStrm.reset();
-            ObjectFactory factory = new ObjectFactory();
+            com.services.nhinc.schema.auditmessage.ObjectFactory factory = 
+            		new com.services.nhinc.schema.auditmessage.ObjectFactory();
             JAXBElement<AuditMessageType> oJaxbElement = factory.createAuditMessage(mess);
-            baOutStrm.close();
             marshaller.marshal(oJaxbElement, baOutStrm);
             byte[] buffer = baOutStrm.toByteArray();
-            eventMessage = Hibernate.createBlob(buffer);
+            //baOutStrm.close(); this call is documented to do nothing so we won't call it.
+            auditMessageBlob = Hibernate.createBlob(buffer);
         } catch (Exception e) {
-            LOG.error("Exception during Blob conversion :" + e.getMessage());
+            LOG.error("Exception during Blob conversion for the audit message :" + e.getMessage());
             e.printStackTrace();
         }
-        return eventMessage;
+        return auditMessageBlob;
     }
 
     /**

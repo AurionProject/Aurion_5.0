@@ -30,7 +30,6 @@ public class AdvancedAuditTest {
     }
     
 	@Test
-	@Ignore
 	public void insertBaseAndAdvanced() {
 		auditDAO = getAuditRepositoryDAO();
 		

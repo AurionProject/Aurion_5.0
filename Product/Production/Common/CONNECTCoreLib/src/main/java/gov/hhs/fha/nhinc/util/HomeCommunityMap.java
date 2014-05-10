@@ -236,11 +236,11 @@ public class HomeCommunityMap {
      */
     public static String formatHomeCommunityId(String communityId) {
         if (communityId != null) {
-            LOG.debug("communityId prior to remove urn:oid" + communityId);
             if (communityId.startsWith("urn:oid:")) {
                 communityId = communityId.substring(8);
             }
         }
+        LOG.debug("Returning communityId without the urn:oid prefix: " + communityId);
         return communityId;
     }
 
@@ -269,11 +269,11 @@ public class HomeCommunityMap {
      */
     public static String getHomeCommunityIdWithPrefix(String communityId) {
         if (communityId != null) {
-            LOG.debug("communityId prior to adding urn:oid" + communityId);
             if (!communityId.startsWith("urn:oid:")) {
                 communityId = "urn:oid:"+communityId;
             }
         }
+        LOG.debug("Returning communityId with the urn:oid prefix: " + communityId);
         return communityId;
     }
 }

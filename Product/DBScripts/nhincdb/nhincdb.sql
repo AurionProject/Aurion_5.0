@@ -47,6 +47,8 @@ CREATE TABLE auditrepo.advanced_audit
     user_roles VARCHAR(64),
     source_system VARCHAR(64),
     source_community VARCHAR(64),
+    query_params TEXT,
+    message_audited MEDIUMTEXT,
     PRIMARY KEY (audit_id)
 );
 GRANT SELECT,INSERT,UPDATE,DELETE ON auditrepo.* to nhincuser;

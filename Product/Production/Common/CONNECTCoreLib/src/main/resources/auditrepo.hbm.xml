@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <!--
-    Document   : eventlog.hbm.xml
+    Document   : auditrepo.hbm.xml
     Created on : July 15, 2008, 10:28 PM
     Author     : svalluripalli
     Description:
-        Purpose of the document follows.
 -->
 <hibernate-mapping>
   <class name="gov.hhs.fha.nhinc.hibernate.AuditRepositoryRecord" table="auditrepository">
     <id column="id" name="id" type="long">
-  		<generator class="increment"/>
+       <generator class="increment"/>
     </id>
     <property   column="audit_timeStamp"  			name="timeStamp" 					type="timestamp" 				not-null="true"/>
     <property   column="eventId" 					name="eventId" 						type="long" 					not-null="false"/>
