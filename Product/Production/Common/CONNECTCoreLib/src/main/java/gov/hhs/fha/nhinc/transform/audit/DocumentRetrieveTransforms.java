@@ -427,7 +427,10 @@ public class DocumentRetrieveTransforms {
         String messageId = null;
 
         RetrieveDocumentSetResponseType actualResponse = message.getMessage().getRetrieveDocumentSetResponse();
-        messageBytes = marshallDocumentRetrieveResponseMessage(actualResponse, forceRedaction);
+        // NOTE: DO NOT UNCOMMENT the marshalling code below. It is a destructive operation that deletes the 
+        //       document so that it is not returned to the requesting gateway on the document retrieve action.
+        //------------------------------------------------------------------------------------------------------
+        messageBytes = null;  // marshallDocumentRetrieveResponseMessage(actualResponse, forceRedaction);
         
         messageId = assertion.getMessageId();
         
