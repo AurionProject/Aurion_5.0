@@ -29,7 +29,12 @@ package gov.hhs.fha.nhinc.direct;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -44,14 +49,27 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.nhindirect.xd.common.DirectDocument2;
 import org.nhindirect.xd.common.DirectDocuments;
+import org.nhindirect.xd.transform.util.type.MimeType;
 
 /**
  * Builder for {@link MimeMessage}.
  */
 public class MimeMessageBuilder {
-
+	private final String DIRECT_ATTACHMENT_OPTION = "direct_attachment_option";
+	@SuppressWarnings("unused")
+	private final String XDM_OPTION = "xdm";
+	private final String XML_OPTION = "xml";
+	private final String GATEWAY_PROPERTIES_FILE = "gateway";
+			
+	
+	private static final Logger LOG = Logger.getLogger(MimeMessageBuilder.class);
     private final Session session;
     private final Address fromAddress;
     private final Address[] recipients;
@@ -164,15 +182,14 @@ public class MimeMessageBuilder {
             throw new DirectException("Exception setting mime message part text: " + text, e);
         }
 
+        List<MimeBodyPart> attachmentParts = new ArrayList<MimeBodyPart>();
         MimeBodyPart attachmentPart = null;
         try {
-            if (documents != null && !StringUtils.isBlank(messageId)) {
-                attachmentPart = getMimeBodyPart();
-
-                messageId = messageId.replace(NhincConstants.WS_SOAP_HEADER_MESSAGE_ID_PREFIX, "");
-                attachmentPart.attachFile(documents.toXdmPackage(messageId).toFile());
+            if (documents != null && !StringUtils.isBlank(messageId)) {            	
+            	addAttachments(attachmentParts, documents, messageId);
             } else if (attachment != null && !StringUtils.isBlank(attachmentName)) {
-                attachmentPart = createAttachmentFromSOAPRequest(attachment, attachmentName);
+                attachmentPart = createAttachmentFromSOAPRequest(attachment, attachmentName);               
+                attachmentParts.add(attachmentPart);
             } else {
                 throw new Exception(
                         "Could not create attachment. Need documents and messageId or attachment and attachmentName.");
@@ -184,7 +201,13 @@ public class MimeMessageBuilder {
         Multipart multipart = new MimeMultipart();
         try {
             multipart.addBodyPart(messagePart);
-            multipart.addBodyPart(attachmentPart);
+            
+			if (!attachmentParts.isEmpty()) {
+				for (MimeBodyPart attPart : attachmentParts) {
+					multipart.addBodyPart(attPart);
+				}
+			}            
+            
             message.setContent(multipart);
         } catch (Exception e) {
             throw new DirectException("Exception creating multi-part attachment.", e);
@@ -199,7 +222,119 @@ public class MimeMessageBuilder {
         return message;
     }
 
+    
+    
     /**
+     * Add attachments to the passed in "MimeBodyPart" list. These attachments can be XDM or XML.
+     * 
+     * @param attachmentParts
+     * 		Contains the existing "MimeBodyPart" list for which to add other attachments. Upon return this list
+     * 		will be updated with new items being added.
+     * @param documents
+     * 		Contains the Direct documents to attach.
+     * @param messageId
+     * 		Contains the Direct message "id".
+     * @throws Exception 
+     */
+	private void addAttachments(List<MimeBodyPart> attachmentParts,
+			DirectDocuments documents, String messageId) throws Exception {
+
+		LOG.debug("Begin MimeMessageBuilder.addAttachments");
+		
+		String directAttachmentOption = getDirectAttachmentOption();			
+
+		if (XML_OPTION.equalsIgnoreCase(directAttachmentOption)) {
+
+			for (DirectDocument2 document : documents.getDocuments()) {
+				if (document.getData() != null) {
+					
+				    File xmlFile = null;					
+					MimeBodyPart attachmentPart = getMimeBodyPart();
+					String fileName = document.getMetadata().getId();
+					
+					fileName = fileName.replace("urn:uuid:", "");
+					fileName = fileName + getSuffix(document.getMetadata().getMimeType());
+						
+					LOG.debug("Direct: Processing attachment fileName: '" + fileName + "'");
+
+					BufferedOutputStream bufferedOutput = null;					
+					
+					try {
+						xmlFile = new File(fileName);
+						
+						LOG.debug("Direct: Writing xml attachment to fileOutputStream");
+						bufferedOutput = new BufferedOutputStream(new FileOutputStream(xmlFile));
+						bufferedOutput.write(document.getData());
+						bufferedOutput.flush();
+						
+				        attachmentPart.attachFile(xmlFile);	
+						attachmentParts.add(attachmentPart);				
+						
+					} catch (Exception e) {
+						e.printStackTrace();
+						
+						String errMessage = "Direct: Error occurred writing xml attachment to bufferedOutputStream. " + e.getMessage();
+						LOG.error(errMessage);
+						
+						throw new Exception(errMessage, e);
+					} finally {
+						if (bufferedOutput != null) {
+							bufferedOutput.close();
+						}
+					}	
+
+					LOG.debug("Direct: Successfully added XML attachment to MimeBodyPart list");
+				}
+			}
+		} else {
+			// Default to "xdm" attachment option
+			messageId = messageId.replace(NhincConstants.WS_SOAP_HEADER_MESSAGE_ID_PREFIX, "");					
+			MimeBodyPart attachmentPart = getMimeBodyPart();
+			attachmentPart.attachFile(documents.toXdmPackage(messageId).toFile());					
+			attachmentParts.add(attachmentPart);
+		}
+		
+		LOG.debug("End MimeMessageBuilder.addAttachments");
+	}
+    
+    
+    /**
+     * Get the mime type suffix.
+     * 
+     * @param mimeType
+     * 		Contains the mime type for which to get the suffix.
+     * @return
+     * 		Returns a String of the mime suffix.
+     */
+    private String getSuffix(String mimeType) {
+        return "." + MimeType.lookup(mimeType).getSuffix();
+    }
+    
+    
+	/**
+	 * Get the direct attachment option from a properties file.
+	 * 
+	 * @return
+	 * 		Returns the direct attachment option.
+	 */
+	private String getDirectAttachmentOption() {
+		String directAttachmentOption = "";
+		
+		try {
+			directAttachmentOption = PropertyAccessor.getInstance(GATEWAY_PROPERTIES_FILE).getProperty(DIRECT_ATTACHMENT_OPTION);
+		} catch (PropertyAccessException e) {
+			e.printStackTrace();
+			LOG.error("Error occured in retrieving the direct attachment option. Defaulting to 'xdm'.");
+			
+			directAttachmentOption = "xdm";
+		}
+		
+		LOG.debug("Direct: Direct attachment option is: '" + directAttachmentOption + "'");	
+		
+		return directAttachmentOption;
+	}
+
+	/**
      * @return mime body part of the message.
      */
     protected MimeBodyPart getMimeBodyPart() {
