@@ -32,14 +32,17 @@ import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerCache;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClient;
 import gov.hhs.fha.nhinc.messaging.client.CONNECTClientFactory;
+import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201306UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.patientdiscovery.nhin.proxy.service.RespondingGatewayServicePortDescriptor;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import ihe.iti.xcpd._2009.RespondingGatewayPortType;
 
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.log4j.Logger;
 import org.hl7.v3.PRPAIN201305UV02;
 import org.hl7.v3.PRPAIN201306UV02;
@@ -78,14 +81,21 @@ public class NhinPatientDiscoveryProxyWebServiceSecuredImpl implements NhinPatie
                 }
 
                 if (NullChecker.isNotNullish(url)) {
-                    ServicePortDescriptor<RespondingGatewayPortType> portDescriptor = new RespondingGatewayServicePortDescriptor();
-
+                	
+                	ServicePortDescriptor<RespondingGatewayPortType> portDescriptor = new RespondingGatewayServicePortDescriptor();
                     CONNECTClient<RespondingGatewayPortType> client = getCONNECTSecuredClient(target, portDescriptor,
                             url, assertion);
-
-                    response = (PRPAIN201306UV02) client.invokePort(RespondingGatewayPortType.class,
+                	if (client != null) {
+                		boolean overrideSuccessful = client.overrideDefaultTimeouts(
+                				NhincConstants.PATIENT_DISCOVERY_CONNECT_TIMEOUT,
+                				NhincConstants.PATIENT_DISCOVERY_RESPONSE_TIMEOUT);
+                		if (! overrideSuccessful){
+                			LOG.warn(this.getClass().getName() + ": Unable to set customized timeouts for DocQuery. Defaults used.");;
+                		}
+                		response = (PRPAIN201306UV02) client.invokePort(RespondingGatewayPortType.class,
                             "respondingGatewayPRPAIN201305UV02", request);
-                } else {
+                	}
+                	} else {
                     LOG.error("Failed to call the web service (" + NhincConstants.PATIENT_DISCOVERY_SERVICE_NAME
                             + ").  The URL is null.");
                 }

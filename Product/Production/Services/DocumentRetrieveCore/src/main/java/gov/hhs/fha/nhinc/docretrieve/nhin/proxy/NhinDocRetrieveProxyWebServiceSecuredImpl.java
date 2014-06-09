@@ -43,15 +43,16 @@ import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants.GATEWAY_API_LEVEL;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants.UDDI_SPEC_VERSION;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.xdcommon.XDCommonResponseHelper;
 import gov.hhs.fha.nhinc.xdcommon.XDCommonResponseHelper.ErrorCodes;
 import ihe.iti.xds_b._2007.RespondingGatewayRetrievePortType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetRequestType;
 import ihe.iti.xds_b._2007.RetrieveDocumentSetResponseType;
-
 import oasis.names.tc.ebxml_regrep.xsd.rs._3.RegistryResponseType;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.log4j.Logger;
 
 /**
@@ -90,9 +91,16 @@ public class NhinDocRetrieveProxyWebServiceSecuredImpl implements NhinDocRetriev
                     CONNECTClient<RespondingGatewayRetrievePortType> client = getCONNECTClientSecured(portDescriptor,
                             assertion, url, targetSystem);
                     client.enableMtom();
-
-                    response = (RetrieveDocumentSetResponseType) client.invokePort(
+                	if (client != null) {
+                		boolean overrideSuccessful = client.overrideDefaultTimeouts(
+                				NhincConstants.DOC_RETRIEVE_CONNECT_TIMEOUT,
+                				NhincConstants.DOC_RETIREVE_RESPONSE_TIMEOUT);
+                		if (! overrideSuccessful){
+                			LOG.warn(this.getClass().getName() + ": Unable to set customized timeouts for DocQuery. Defaults used.");;
+                		}
+                		response = (RetrieveDocumentSetResponseType) client.invokePort(
                             RespondingGatewayRetrievePortType.class, "respondingGatewayCrossGatewayRetrieve", request);
+                	}
                 } else {
                     LOG.error("Failed to call the web service (" + sServiceName + ").  The URL is null.");
                 }

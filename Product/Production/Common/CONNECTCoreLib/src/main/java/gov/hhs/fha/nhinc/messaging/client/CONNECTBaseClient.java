@@ -31,9 +31,14 @@ import gov.hhs.fha.nhinc.messaging.service.BaseServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
 import gov.hhs.fha.nhinc.messaging.service.decorator.TimeoutServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.messaging.service.decorator.URLServiceEndpointDecorator;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.nhinclib.NullChecker;
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 
 import org.apache.cxf.phase.PhaseInterceptorChain;
+import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 
 /**
  * @author akong
@@ -72,4 +77,5 @@ public abstract class CONNECTBaseClient<T> implements CONNECTClient<T> {
         
         return serviceEndpoint;
     }
+
 }

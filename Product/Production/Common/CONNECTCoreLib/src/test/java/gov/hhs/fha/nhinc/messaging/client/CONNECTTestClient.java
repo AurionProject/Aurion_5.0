@@ -88,4 +88,9 @@ public class CONNECTTestClient<T> implements CONNECTClient<T> {
     public void enableWSA(AssertionType assertion, String wsAddressingTo, String wsAddressingActionId) {
         serviceEndpoint = new WsAddressingServiceEndpointDecorator<T>(serviceEndpoint, wsAddressingTo, wsAddressingActionId, assertion);
     }
+    
+    @Override
+    public boolean overrideDefaultTimeouts(String connectOTTag, String responseTOTag){
+    	return true;
+    }
 }

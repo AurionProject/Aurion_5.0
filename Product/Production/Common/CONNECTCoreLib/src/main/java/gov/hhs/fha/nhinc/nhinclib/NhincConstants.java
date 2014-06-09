@@ -155,14 +155,20 @@ public class NhincConstants {
     public static final String RESPONSE_MESSAGE_ID_KEY = "RESPONSE_MESSAGE_ID";
     public static final String RESPONSE_MESSAGE_ID_LIST_KEY = "RESPONSE_MESSAGE_ID_LIST";
 
-    // these 6 not used anymore
-    public static final String PATIENT_DISCOVERY_CONNECT_TIMEOUT = "PDConnectTimeout";
-    public static final String PATIENT_DISCOVERY_REQUEST_TIMEOUT = "PDRequestTimeout";
-    public static final String DOC_QUERY_CONNECT_TIMEOUT = "DQConnectTimeout";
-    public static final String DOC_QUERY_REQUEST_TIMEOUT = "DQRequestTimeout";
-    public static final String CONNECT_TIMEOUT_NAME = "com.sun.xml.ws.connect.timeout";
-    public static final String REQUEST_TIMEOUT_NAME = "com.sun.xml.ws.request.timeout";
+    // these 8 are used in Aurion 5, the Service Specific timeouts take precedence over the first two
+    // generic values.
+    // WebServiceClient DEFAULT Timeout Values NEW    
+    public static final String DEFAULT_CONNECT_TIMEOUT = "client.default.connect.timeout";
+    public static final String DEFAULT_RESPONSE_TIMEOUT= "client.default.response.timeout";
 
+    //WebServiceClient Customized Timeout by Service NEW
+    public static final String PATIENT_DISCOVERY_CONNECT_TIMEOUT =  "client.patientdiscovery.connect.timeout";
+    public static final String PATIENT_DISCOVERY_RESPONSE_TIMEOUT = "client.patientdiscovery.response.timeout";
+    public static final String DOC_QUERY_CONNECT_TIMEOUT = 			"client.documentquery.connect.timeout";
+    public static final String DOC_QUERY_RESPONSE_TIMEOUT = 		"client.documentquery.response.timeout";
+    public static final String DOC_RETRIEVE_CONNECT_TIMEOUT = 		"client.doc.retrieve.connect.timeout";
+    public static final String DOC_RETIREVE_RESPONSE_TIMEOUT = 		"client.doc.retrieve.response.timeout";
+   
     // SAML Constants
     public static final String TARGET_API_LEVEL = "targetAPILevel";
     public static final String ACTION_PROP = "action";

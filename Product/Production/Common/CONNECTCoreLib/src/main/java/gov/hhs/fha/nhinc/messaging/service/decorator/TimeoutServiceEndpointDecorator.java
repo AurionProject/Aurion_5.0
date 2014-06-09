@@ -28,6 +28,7 @@
 package gov.hhs.fha.nhinc.messaging.service.decorator;
 
 import gov.hhs.fha.nhinc.messaging.service.ServiceEndpoint;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.properties.PropertyAccessException;
 import gov.hhs.fha.nhinc.properties.PropertyAccessor;
@@ -58,26 +59,44 @@ public class TimeoutServiceEndpointDecorator<T> extends ServiceEndpointDecorator
 
         HTTPClientPolicy httpClientPolicy = getHTTPClientPolicy();
         
-        int timeout = getTimeoutFromConfig();
-        httpClientPolicy.setReceiveTimeout(timeout);
-        httpClientPolicy.setConnectionTimeout(timeout);
+        long connectTimeout = getConnectTOFromConfig();
+        long responseTimeout = getResponseTOFromConfig();
+        httpClientPolicy.setConnectionTimeout(connectTimeout);
+        httpClientPolicy.setReceiveTimeout(responseTimeout);
     }
 
-    private int getTimeoutFromConfig() {
-        int timeout = 0;
+    private long getConnectTOFromConfig() {
+        long connectTimeout = 10000L;
+
         try {
-            String sValue = PropertyAccessor.getInstance().getProperty(CONFIG_KEY_TIMEOUT);
-            if (NullChecker.isNotNullish(sValue)) {
-                timeout = Integer.parseInt(sValue);
+            String sConnectTO = PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE,NhincConstants.DEFAULT_CONNECT_TIMEOUT);
+            if (NullChecker.isNotNullish(sConnectTO)) {
+                connectTimeout = Long.parseLong(sConnectTO);
             }
         } catch (PropertyAccessException ex) {
-            LOG.warn("Error occurred reading property value from config file (" + CONFIG_KEY_TIMEOUT
+            LOG.warn("Error occurred reading property value from config file (" + NhincConstants.DEFAULT_CONNECT_TIMEOUT
                     + ").  Exception: " + ex.toString());
         } catch (NumberFormatException nfe) {
-            LOG.warn("Error occurred converting property value: " + CONFIG_KEY_TIMEOUT + ".  Exception: "
+            LOG.warn("Error occurred converting property value: " + NhincConstants.DEFAULT_CONNECT_TIMEOUT + ".  Exception: "
                     + nfe.toString());
         }
-        return timeout;
+        return connectTimeout;
     }
 
+    private long getResponseTOFromConfig() {
+        long responseTimeout = 40000L;
+        try {
+            String sResponseTO = PropertyAccessor.getInstance().getProperty(NhincConstants.GATEWAY_PROPERTY_FILE,NhincConstants.DEFAULT_RESPONSE_TIMEOUT);
+            if (NullChecker.isNotNullish(sResponseTO)) {
+            	responseTimeout = Long.parseLong(sResponseTO);
+            }
+        } catch (PropertyAccessException ex) {
+            LOG.warn("Error occurred reading property value from config file (" + NhincConstants.DEFAULT_RESPONSE_TIMEOUT
+                    + ").  Exception: " + ex.toString());
+        } catch (NumberFormatException nfe) {
+            LOG.warn("Error occurred converting property value: " + NhincConstants.DEFAULT_RESPONSE_TIMEOUT + ".  Exception: "
+                    + nfe.toString());
+        }
+        return responseTimeout;
+    }
 }

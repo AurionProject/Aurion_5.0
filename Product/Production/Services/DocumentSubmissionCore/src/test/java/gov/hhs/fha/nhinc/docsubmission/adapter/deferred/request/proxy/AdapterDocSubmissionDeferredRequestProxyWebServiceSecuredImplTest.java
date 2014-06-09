@@ -111,6 +111,11 @@ public class AdapterDocSubmissionDeferredRequestProxyWebServiceSecuredImplTest {
         public void enableWSA(AssertionType assertion, String wsAddressingTo, String wsAddressingActionId) {
             
         }
+        
+        @Override
+        public boolean overrideDefaultTimeouts(String connectTO, String responseTO) {
+        	return true;
+        }
     }
 
     /**

@@ -36,6 +36,10 @@ import gov.hhs.fha.nhinc.messaging.service.decorator.URLServiceEndpointDecorator
 import gov.hhs.fha.nhinc.messaging.service.decorator.cxf.WsAddressingServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.messaging.service.port.CXFServicePortBuilder;
 import gov.hhs.fha.nhinc.messaging.service.port.ServicePortDescriptor;
+import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.nhinclib.NullChecker;
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 import gov.hhs.fha.nhinc.webserviceproxy.WebServiceProxyHelper;
 
 /**
@@ -87,6 +91,10 @@ public class UDDIBaseClient<T> implements CONNECTClient<T> {
     public void enableWSA(AssertionType assertion, String wsAddressingTo, String wsAddressingActionId) {
         serviceEndpoint = new WsAddressingServiceEndpointDecorator<T>(serviceEndpoint, wsAddressingTo, wsAddressingActionId, assertion);
     }
-
     
+    // This method was added to allow the setting of timeout values on a per endpooint basis
+    // Override Default Timeouts
+    public boolean overrideDefaultTimeouts(String connectTOTag, String responseTOTag){
+    	return false;
+    }
 }
