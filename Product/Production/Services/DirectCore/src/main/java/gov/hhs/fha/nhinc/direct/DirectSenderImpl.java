@@ -33,6 +33,8 @@ import java.util.Enumeration;
 import gov.hhs.fha.nhinc.direct.event.DirectEventLogger;
 import gov.hhs.fha.nhinc.direct.event.DirectEventType;
 import gov.hhs.fha.nhinc.mail.MailSender;
+import gov.hhs.fha.nhinc.properties.PropertyAccessException;
+import gov.hhs.fha.nhinc.properties.PropertyAccessor;
 
 import javax.mail.Address;
 import javax.mail.Header;
@@ -47,6 +49,9 @@ import org.nhindirect.xd.common.DirectDocuments;
  * Used to send outbound direct messages.
  */
 public class DirectSenderImpl extends DirectAdapter implements DirectSender {
+	
+	private static final String OVERRIDE_MIME_MESSAGE_ID = "override_mime_message_id";
+	private static final String GATEWAY_PROPERTIES_FILE = "gateway";
 	private static final String DATE_HEADER_FIELD = "Date";
 
     private static final Logger LOG = Logger.getLogger(DirectSenderImpl.class);
@@ -88,11 +93,50 @@ public class DirectSenderImpl extends DirectAdapter implements DirectSender {
         try {
             message = new MimeMessageBuilder(getExternalMailSender().getMailSession(), sender, recipients)
                     .subject(MSG_SUBJECT).text(MSG_TEXT).documents(documents).messageId(messageId).build();
+            
+            LOG.debug("\nDirectSenderImpl - Created MimeMessage - System generated Message-ID: '" + message.getMessageID() + "'");   
+            
+            if (getOverrideMimeMessageIdOption()) {            	
+                // Override the generated header value for "Message-ID". This is needed so that a sending system can "link" the Direct 
+                // message that is sent out with the corresponding MDN message that comes back in at a later time.
+                //---------------------------------------------------------------------------------------------------------------------
+                message.setHeader("Message-ID", messageId);    
+                
+                LOG.debug("\nDirectSenderImpl - Overriding header 'Message-ID' to value: '" + message.getMessageID() + "'"); 
+			}
+            
             sendOutboundDirect(message);
-        } catch (Exception e) {
+         } catch (Exception e) {
             throw new DirectException("Error building and sending mime message.", e, message);
         }
-    }
+    }   
+    
+    
+	/**
+	 * Gets the override mime message id option from a properties file.
+	 * 
+	 * @return
+	 * 		Returns a boolean representing the value for the override mime message id option.
+	 */
+	protected boolean getOverrideMimeMessageIdOption() {
+		boolean overrideMimeMessageIdFlag = false;
+		
+		try {
+			String overrideMimeMessageIdOption = PropertyAccessor.getInstance(GATEWAY_PROPERTIES_FILE).getProperty(OVERRIDE_MIME_MESSAGE_ID);
+			
+			if ("true".equalsIgnoreCase(overrideMimeMessageIdOption)) {
+				overrideMimeMessageIdFlag = true;
+			}
+		} catch (PropertyAccessException e) {
+			LOG.warn("Error occured in retrieving the override mime message id option. Defaulting to 'false'.");
+			e.printStackTrace();
+		}
+		
+		LOG.debug("Direct: Override mime message id option: '" + overrideMimeMessageIdFlag + "'");	
+		
+		return overrideMimeMessageIdFlag;
+	}
+    
     
 	/**
      * The "origination-date" is a required message "header" field according to RFC 5322. 
