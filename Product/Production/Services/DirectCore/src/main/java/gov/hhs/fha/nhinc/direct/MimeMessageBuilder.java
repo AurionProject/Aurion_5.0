@@ -27,6 +27,7 @@
 package gov.hhs.fha.nhinc.direct;
 
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
+import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import ihe.iti.xds_b._2007.ProvideAndRegisterDocumentSetRequestType.Document;
 
 import java.io.BufferedOutputStream;
@@ -287,10 +288,11 @@ public class MimeMessageBuilder {
 				}
 			}
 		} else {
-			// Default to "xdm" attachment option
-			messageId = messageId.replace(NhincConstants.WS_SOAP_HEADER_MESSAGE_ID_PREFIX, "");					
+			// Default to "xdm" attachment option			
+			String formattedMessageId = formatMessageIdForXDMAttachmentName(messageId);
+			
 			MimeBodyPart attachmentPart = getMimeBodyPart();
-			attachmentPart.attachFile(documents.toXdmPackage(messageId).toFile());					
+			attachmentPart.attachFile(documents.toXdmPackage(formattedMessageId).toFile());					
 			attachmentParts.add(attachmentPart);
 		}
 		
@@ -299,6 +301,36 @@ public class MimeMessageBuilder {
     
     
     /**
+     * Format the "messageId" to be used to name the XDM attachment.
+     * 
+     * @param messageId
+     * 		Contains a "messageId" to format.
+     * @return
+     * 		Returns a formatted "messageId".
+     */
+    private String formatMessageIdForXDMAttachmentName(String messageId) {
+    	String formattedMessageId = messageId;
+    	
+    	LOG.debug("MimeMessageBuilder.formatMessageIdForXDMAttachmentName - Passed in value: '" + messageId + "'");
+    	
+    	if (NullChecker.isNotNullish(messageId)) {
+    		formattedMessageId = messageId.replace(NhincConstants.WS_SOAP_HEADER_MESSAGE_ID_PREFIX, "");	
+    		
+    		if (formattedMessageId.startsWith("<")) {
+    			formattedMessageId = formattedMessageId.substring(1);
+			}
+    		
+    		if (formattedMessageId.endsWith(">")) {
+    			formattedMessageId = formattedMessageId.substring(0, formattedMessageId.length() - 1);
+			}
+		}
+    	
+    	LOG.debug("MimeMessageBuilder.formatMessageIdForXDMAttachmentName - Return value: '" + formattedMessageId + "'");
+     	
+		return formattedMessageId;
+	}
+
+	/**
      * Get the mime type suffix.
      * 
      * @param mimeType
