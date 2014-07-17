@@ -121,7 +121,7 @@
                 <include name="ConnectionManagerCore/${maven_version}/ConnectionManagerCore-${maven_version}.jar" />
                 <include name="ConnectionManagerWebservices/${maven_version}/ConnectionManagerWebservices-${maven_version}.jar" />
                 <include name="CONNECTUniversalClientGUI/${maven_version}/CONNECTUniversalClientGUI-${maven_version}.war" />
-                <include name="Direct/${maven_version}/Direct-${maven_version}.war" />
+                <include name="DBScripts/${maven_version}/DBScripts-${maven_version}.jar" />
                 <include name="DirectCore/${maven_version}/DirectCore-${maven_version}.jar" />
                 <include name="DirectWebservices/${maven_version}/DirectWebservices-${maven_version}.jar" />
                 <include name="DocRegistryCore/${maven_version}/DocRegistryCore-${maven_version}.jar" />
@@ -181,6 +181,7 @@
                 <include name="ConnectionManagerCore/${maven_version}/ConnectionManagerCore-${maven_version}.pom" />
                 <include name="ConnectionManagerWebservices/${maven_version}/ConnectionManagerWebservices-${maven_version}.pom" />
                 <include name="CONNECTUniversalClientGUI/${maven_version}/CONNECTUniversalClientGUI-${maven_version}.pom" />
+                <include name="DBScripts/${maven_version}/DBScripts-${maven_version}.pom" />
                 <include name="Direct/${maven_version}/Direct-${maven_version}.pom" />
                 <include name="DirectCore/${maven_version}/DirectCore-${maven_version}.pom" />
                 <include name="DirectWebservices/${maven_version}/DirectWebservices-${maven_version}.pom" />
