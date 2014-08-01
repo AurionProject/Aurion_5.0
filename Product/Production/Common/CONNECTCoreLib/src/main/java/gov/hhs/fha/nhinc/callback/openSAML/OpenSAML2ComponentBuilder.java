@@ -85,7 +85,9 @@ import org.opensaml.xml.signature.SignatureConstants;
  */
 public class OpenSAML2ComponentBuilder implements SAMLCompontentBuilder {
 
-    /** The authn statement builder. */
+    private static final String ATTRIBUTE_NAME_FORMAT_UNSPECIFIED = "urn:oasis:names:tc:SAML:2.0:attrname-format:unspecified";
+
+	/** The authn statement builder. */
     private final SAMLObjectBuilder<AuthnStatement> authnStatementBuilder;
 
     /** The authn context builder. */
@@ -696,7 +698,7 @@ public class OpenSAML2ComponentBuilder implements SAMLCompontentBuilder {
             userRoleAttributes.put(new QName(SamlConstants.CE_DISPLAYNAME_ID), displayName);
         }
 
-        userRoleAttributes.put(new QName("type"), "hl7:CE");
+        userRoleAttributes.put(new QName("http://www.w3.org/2001/XMLSchema-instance", "type", "xsi"), "hl7:CE");
 
         XSAny attributeValue = createAttributeValue("urn:hl7-org:v3", name, "hl7", userRoleAttributes);
         return attributeValue;
@@ -870,6 +872,8 @@ public class OpenSAML2ComponentBuilder implements SAMLCompontentBuilder {
             purposeOfUseAttributes.put(new QName(SamlConstants.CE_DISPLAYNAME_ID), purposeDisplay);
         }
 
+        purposeOfUseAttributes.put(new QName("http://www.w3.org/2001/XMLSchema-instance", "type", "xsi"), "CE");
+        
         Object attributeValue = OpenSAML2ComponentBuilder.getInstance().createAttributeValue("urn:hl7-org:v3",
                 attributeName, "hl7", purposeOfUseAttributes);
 

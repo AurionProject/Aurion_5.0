@@ -33,6 +33,7 @@ import gov.hhs.fha.nhinc.messaging.service.decorator.ServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.wsa.WSAHeaderHelper;
 
+import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.lang.StringUtils;
@@ -69,8 +70,11 @@ public class WsAddressingServiceEndpointDecorator<T> extends ServiceEndpointDeco
         maps.setTo(to);
 
         AttributedURIType action = new AttributedURIType();
-        action.setValue(wsAddressingAction);
+        action.setValue(wsAddressingAction);        
         maps.setAction(action);
+		
+        // Set the mustUnderstand flag(s)
+        maps.getMustUnderstand().add(new QName("http://www.w3.org/2005/08/addressing", "Action"));
 
         setContentTypeInHTTPHeader();
     }
