@@ -33,16 +33,17 @@ import gov.hhs.fha.nhinc.messaging.service.decorator.ServiceEndpointDecorator;
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.wsa.WSAHeaderHelper;
 
-import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transports.http.configuration.HTTPClientPolicy;
 import org.apache.cxf.ws.addressing.AttributedURIType;
 import org.apache.cxf.ws.addressing.JAXWSAConstants;
+import org.apache.cxf.ws.addressing.Names;
 import org.apache.cxf.ws.addressing.RelatesToType;
 import org.apache.cxf.ws.addressing.impl.AddressingPropertiesImpl;
 import org.apache.log4j.Logger;
+import org.apache.cxf.ws.addressing.EndpointReferenceType;
 
 /**
  * @author akong and young weezy
@@ -61,7 +62,9 @@ public class WsAddressingServiceEndpointDecorator<T> extends ServiceEndpointDeco
         super(decoratoredEndpoint);
 
         this.bindingProviderPort = (BindingProvider) decoratedEndpoint.getPort();
-        this.assertion = assertion;
+        if (assertion != null) {
+            this.assertion = assertion;
+        }
 
         maps = new AddressingPropertiesImpl();
 
@@ -70,11 +73,16 @@ public class WsAddressingServiceEndpointDecorator<T> extends ServiceEndpointDeco
         maps.setTo(to);
 
         AttributedURIType action = new AttributedURIType();
-        action.setValue(wsAddressingAction);        
+        action.setValue(wsAddressingAction);
+        maps.getMustUnderstand().add(Names.WSA_ACTION_QNAME);
         maps.setAction(action);
-		
-        // Set the mustUnderstand flag(s)
-        maps.getMustUnderstand().add(new QName("http://www.w3.org/2005/08/addressing", "Action"));
+
+        EndpointReferenceType replyTo = new EndpointReferenceType();
+        AttributedURIType replyToAddress = new AttributedURIType();
+        replyToAddress.setValue("http://www.w3.org/2005/08/addressing/anonymous");
+        replyTo.setAddress(replyToAddress);
+        maps.getMustUnderstand().add(Names.WSA_REPLYTO_QNAME);
+        maps.setReplyTo(replyTo);
 
         setContentTypeInHTTPHeader();
     }
@@ -84,9 +92,11 @@ public class WsAddressingServiceEndpointDecorator<T> extends ServiceEndpointDeco
         super.configure();
 
         String sRelatesTo = null;
-        for (String s : assertion.getRelatesToList()) {
-            sRelatesTo = s;
-            break;
+        if (assertion != null) {
+            for (String s : assertion.getRelatesToList()) {
+                sRelatesTo = s;
+                break;
+            }
         }
         String sMessageId = getMessageId();
 
@@ -122,7 +132,7 @@ public class WsAddressingServiceEndpointDecorator<T> extends ServiceEndpointDeco
     }
 
     private String removeActionFromContentType(String contentType) {
-    	String[] contentTypeValues = contentType.split("(?<=;)");
+        String[] contentTypeValues = contentType.split("(?<=;)");
 
         String newContentType = "";
         for (int i = 0; i < contentTypeValues.length; i++) {
@@ -136,7 +146,7 @@ public class WsAddressingServiceEndpointDecorator<T> extends ServiceEndpointDeco
 
     /**
      * This method retrieves the message identifier stored in the assertion If the message ID is null or empty, this
-     * method will generate a new UUID to use for the message ID. 
+     * method will generate a new UUID to use for the message ID.
      * 
      * @return The message identifier
      */
