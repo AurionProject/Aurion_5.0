@@ -32,6 +32,7 @@ import gov.hhs.fha.nhinc.common.nhinccommon.HomeCommunityType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunitiesType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetCommunityType;
 import gov.hhs.fha.nhinc.common.nhinccommon.NhinTargetSystemType;
+import gov.hhs.fha.nhinc.compliance.PatientDiscoveryRequestComplianceChecker;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerCache;
 import gov.hhs.fha.nhinc.connectmgr.ConnectionManagerException;
 import gov.hhs.fha.nhinc.connectmgr.NhinEndpointManager;
@@ -73,6 +74,7 @@ import org.hl7.v3.RespondingGatewayPRPAIN201305UV02RequestType;
 import org.hl7.v3.RespondingGatewayPRPAIN201306UV02ResponseType;
 
 import com.google.common.base.Optional;
+
 import gov.hhs.fha.nhinc.util.HomeCommunityMap;
 
 public class StandardOutboundPatientDiscovery implements OutboundPatientDiscovery {
@@ -413,6 +415,8 @@ public class StandardOutboundPatientDiscovery implements OutboundPatientDiscover
                 queryParams.setResponsePriorityCode(HL7DataTransformHelper.CSFactory("I"));
             }
         }
+        PatientDiscoveryRequestComplianceChecker complianceChecker = new PatientDiscoveryRequestComplianceChecker(new201305);
+        complianceChecker.update2011SpecCompliance();
 
         newRequest.setAssertion(newAssertion);
         newRequest.setPRPAIN201305UV02(new201305);
