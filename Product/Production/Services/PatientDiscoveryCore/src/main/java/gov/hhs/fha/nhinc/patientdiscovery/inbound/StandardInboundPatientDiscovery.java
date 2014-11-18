@@ -27,6 +27,7 @@
 package gov.hhs.fha.nhinc.patientdiscovery.inbound;
 
 import gov.hhs.fha.nhinc.common.nhinccommon.AssertionType;
+import gov.hhs.fha.nhinc.compliance.PatientDiscoveryResponseComplianceChecker;
 import gov.hhs.fha.nhinc.nhinclib.NhincConstants;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscovery201305Processor;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
@@ -75,6 +76,9 @@ public class StandardInboundPatientDiscovery extends AbstractInboundPatientDisco
     	
         PRPAIN201306UV02 response = patientDiscoveryProcessor.process201305(body, assertion);
 
+        PatientDiscoveryResponseComplianceChecker complianceChecker = new PatientDiscoveryResponseComplianceChecker(response);
+        complianceChecker.update2011SpecCompliance();
+        
         if (auditAdapter) {
         	auditResponseFromAdapter(response, assertion);
         }

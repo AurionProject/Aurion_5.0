@@ -98,7 +98,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("The assigned device class code was null after compliance check", request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
-		assertEquals("The assigned device class code was incorrect after compliance check", ComplianceChecker.ASSIGNED_DEVICE_CLASS_CODE, request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
+		assertEquals("The assigned device class code was incorrect after compliance check", PatientDiscoveryRequestComplianceChecker.ASSIGNED_DEVICE_CLASS_CODE, request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
 	}
 
 	/**
@@ -111,11 +111,11 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		assertNull("The assigned device class code was not null before compliance check", request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
 		request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().setClassCode("A");
 		assertNotNull("The assigned device class code was null before compliance check", request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
-		assertFalse("The assigned device class code was already correct before compliance check", ComplianceChecker.ASSIGNED_DEVICE_CLASS_CODE.equals(request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode()));
+		assertFalse("The assigned device class code was already correct before compliance check", PatientDiscoveryRequestComplianceChecker.ASSIGNED_DEVICE_CLASS_CODE.equals(request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode()));
 
 		testSubject.update2011SpecCompliance();
 		assertNotNull("The assigned device class code was null after compliance check", request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
-		assertEquals("The assigned device class code was incorrect after compliance check", ComplianceChecker.ASSIGNED_DEVICE_CLASS_CODE, request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
+		assertEquals("The assigned device class code was incorrect after compliance check", PatientDiscoveryRequestComplianceChecker.ASSIGNED_DEVICE_CLASS_CODE, request.getControlActProcess().getAuthorOrPerformer().get(0).getAssignedDevice().getValue().getClassCode());
 	}
 	
 	// ################# PATIENT GENDER ####################
@@ -126,7 +126,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Gender semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText());
 		assertEquals("Patient Gender semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Gender semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Gender semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -138,7 +138,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Gender semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText());
 		assertEquals("Patient Gender semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Gender semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Gender semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -147,12 +147,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Gender semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText());
 		assertFalse("Patient Gender semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Gender semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Gender semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Gender semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText());
 		assertEquals("Patient Gender semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Gender semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Gender semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_GENDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectAdministrativeGender().get(0).getSemanticsText().getContent().get(0));
 	}
 	
 	// ################### PATIENT BIRTH TIME #################
@@ -163,7 +163,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient DOB semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText());
 		assertEquals("Patient DOB semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient DOB semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient DOB semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient DOB semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText());
 		assertEquals("Patient DOB semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient DOB semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient DOB semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -184,12 +184,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient DOB semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText());
 		assertFalse("Patient DOB semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient DOB semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient DOB semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient DOB semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText());
 		assertEquals("Patient DOB semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient DOB semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient DOB semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_TIME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthTime().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### SUBJECT ID #######################
@@ -200,7 +200,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Id semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText());
 		assertEquals("Patient Id semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Id semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Id semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -212,7 +212,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Id semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText());
 		assertEquals("Patient Id semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Id semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Id semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -221,12 +221,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Id semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText());
 		assertFalse("Patient Id semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Id semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Id semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Id semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText());
 		assertEquals("Patient Id semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Id semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Id semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_SUBJECT_ID, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectId().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### SUBJECT NAME #######################
@@ -237,7 +237,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText());
 		assertEquals("Patient Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -249,7 +249,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText());
 		assertEquals("Patient Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -258,12 +258,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText());
 		assertFalse("Patient Name semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Name semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Name semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText());
 		assertEquals("Patient Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### PATIENT ADDRESS ####################
@@ -274,7 +274,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText());
 		assertEquals("Patient Address semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Address semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Address semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -286,7 +286,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText());
 		assertEquals("Patient Address semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Address semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Address semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -295,12 +295,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText());
 		assertFalse("Patient Address semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Address semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Address semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText());
 		assertEquals("Patient Address semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Address semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Address semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientAddress().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### BIRTH PLACE ADDRESS #######################
@@ -311,7 +311,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Birth Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText());
 		assertEquals("Patient Birth Address semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Birth Address semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Birth Address semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -323,7 +323,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Birth Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText());
 		assertEquals("Patient Birth Address semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Birth Address semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Birth Address semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -332,12 +332,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Birth Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText());
 		assertFalse("Patient Birth Address semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Birth Address semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Birth Address semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Birth Address semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText());
 		assertEquals("Patient Birth Address semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Birth Address semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Birth Address semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_ADDRESS, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceAddress().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### BIRTH PLACE NAME #######################
@@ -348,7 +348,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Birth Place Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText());
 		assertEquals("Patient Birth Place Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Birth Place Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Birth Place Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -360,7 +360,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Birth Place Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText());
 		assertEquals("Patient Birth Place Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Birth Place Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Birth Place Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -369,12 +369,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Birth Place Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText());
 		assertFalse("Patient Birth Place Name semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Birth Place Name semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Birth Place Name semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Birth Place Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText());
 		assertEquals("Patient Birth Place Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Birth Place Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Birth Place Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_BIRTH_PLACE_NAME, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getLivingSubjectBirthPlaceName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### PRINCIPAL CARE PROVIDER #######################
@@ -385,7 +385,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Principal CareProvider ID semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText());
 		assertEquals("Principal CareProvider ID semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().size());
-		assertEquals("Principal CareProvider ID semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Principal CareProvider ID semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -397,7 +397,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Principal CareProvider ID semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText());
 		assertEquals("Principal CareProvider ID semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().size());
-		assertEquals("Principal CareProvider ID semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Principal CareProvider ID semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -406,12 +406,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Principal CareProvider ID semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText());
 		assertFalse("Principal CareProvider ID semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Principal CareProvider ID semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Principal CareProvider ID semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Principal CareProvider ID semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText());
 		assertEquals("Principal CareProvider ID semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().size());
-		assertEquals("Principal CareProvider ID semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Principal CareProvider ID semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PRINCIPAL_CARE_PROVIDER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPrincipalCareProviderId().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ################### MOTHERS MAIDEN NAME #######################
@@ -422,7 +422,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Mothers Maiden Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText());
 		assertEquals("Patient Mothers Maiden Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Mothers Maiden Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Mothers Maiden Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -434,7 +434,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Mothers Maiden Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText());
 		assertEquals("Patient Mothers Maiden Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Mothers Maiden Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Mothers Maiden Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -443,12 +443,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Mothers Maiden Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText());
 		assertFalse("Patient Mothers Maiden Name semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Mothers Maiden Name semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Mothers Maiden Name semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Mothers Maiden Name semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText());
 		assertEquals("Patient Mothers Maiden Name semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Mothers Maiden Name semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Mothers Maiden Name semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_MAIDEN_NAME_MOTHER, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getMothersMaidenName().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -470,7 +470,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Telecom semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText());
 		assertEquals("Patient Telecom semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Telecom semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Telecom semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -482,7 +482,7 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Telecom semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText());
 		assertEquals("Patient Telecom semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Telecom semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Telecom semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	@Test
@@ -491,12 +491,12 @@ public class PatientDiscoveryRequestComplianceCheckerTest {
 		request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().add("Wrong_Content");
 		assertNotNull("Patient Telecom semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText());
 		assertFalse("Patient Telecom semantics text value list was empty before compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().isEmpty());
-		assertFalse("Patient Telecom semantics text value was already correct before compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0)));
+		assertFalse("Patient Telecom semantics text value was already correct before compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM.equals(request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0)));
 		
 		testSubject.update2011SpecCompliance();
 		assertNotNull("Patient Telecom semantics text was null after compliance update", request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText());
 		assertEquals("Patient Telecom semantics text value list did not have one single value after compliance update", 1, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().size());
-		assertEquals("Patient Telecom semantics text value was not correct after compliance update", ComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0));
+		assertEquals("Patient Telecom semantics text value was not correct after compliance update", PatientDiscoveryRequestComplianceChecker.SEMANTICS_TEXT_REPRESENTATION_PATIENT_TELECOM, request.getControlActProcess().getQueryByParameter().getValue().getParameterList().getPatientTelecom().get(0).getSemanticsText().getContent().get(0));
 	}
 
 	// ####################### TEST UTILITY #########################
