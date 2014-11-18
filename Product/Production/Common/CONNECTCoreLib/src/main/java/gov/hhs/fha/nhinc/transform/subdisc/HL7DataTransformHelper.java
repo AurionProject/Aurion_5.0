@@ -28,12 +28,16 @@ package gov.hhs.fha.nhinc.transform.subdisc;
 
 import gov.hhs.fha.nhinc.nhinclib.NullChecker;
 import gov.hhs.fha.nhinc.util.HomeCommunityMap;
+
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
+
 import javax.xml.bind.JAXBElement;
+
 import org.apache.log4j.Logger;
 import org.hl7.v3.*;
 
@@ -44,6 +48,11 @@ import org.hl7.v3.*;
 public class HL7DataTransformHelper {
 
     private static final Logger LOG = Logger.getLogger(HL7DataTransformHelper.class);
+
+    private static final SimpleDateFormat creationDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+    static {
+    	creationDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     public static II IIFactory(String root) {
         return IIFactory(root, null, null);
@@ -136,20 +145,23 @@ public class HL7DataTransformHelper {
     }
 
     public static TSExplicit creationTimeFactory() {
-        String timestamp = "";
+        String timestamp = null;
         TSExplicit creationTime = new TSExplicit();
 
         try {
             GregorianCalendar today = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
 
-            timestamp = String.valueOf(today.get(GregorianCalendar.YEAR))
-                + String.valueOf(today.get(GregorianCalendar.MONTH) + 1)
-                + String.valueOf(today.get(GregorianCalendar.DAY_OF_MONTH))
-                + String.valueOf(today.get(GregorianCalendar.HOUR_OF_DAY))
-                + String.valueOf(today.get(GregorianCalendar.MINUTE))
-                + String.valueOf(today.get(GregorianCalendar.SECOND));
+            timestamp = creationDateFormat.format(today.getTime());
+            // The following will result in invalid timestamp when any value is a single digit.
+            // Results in "1" instead of "01" for example
+//            timestamp = String.valueOf(today.get(GregorianCalendar.YEAR))
+//                + String.valueOf(today.get(GregorianCalendar.MONTH) + 1)
+//                + String.valueOf(today.get(GregorianCalendar.DAY_OF_MONTH))
+//                + String.valueOf(today.get(GregorianCalendar.HOUR_OF_DAY))
+//                + String.valueOf(today.get(GregorianCalendar.MINUTE))
+//                + String.valueOf(today.get(GregorianCalendar.SECOND));
         } catch (Exception e) {
-            LOG.error("Exception when creating XMLGregorian Date");
+            LOG.error("Exception when creating creation date");
             LOG.error(" message: " + e.getMessage());
         }
 

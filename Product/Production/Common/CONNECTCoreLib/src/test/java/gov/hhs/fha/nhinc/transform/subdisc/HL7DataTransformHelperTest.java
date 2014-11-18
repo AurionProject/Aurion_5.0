@@ -226,6 +226,7 @@ public class HL7DataTransformHelperTest {
         HL7DataTransformHelper helper = new HL7DataTransformHelper();
         ts = helper.creationTimeFactory();
         assertNotNull(ts.getValue());
+        assertEquals("Creation timestamp length", 14, ts.getValue().length());
     }
 
     @SuppressWarnings("rawtypes")
