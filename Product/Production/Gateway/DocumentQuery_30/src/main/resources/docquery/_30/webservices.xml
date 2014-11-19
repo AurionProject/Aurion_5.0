@@ -33,6 +33,7 @@ http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd http://www.s
         </jaxws:inInterceptors>
         <jaxws:handlers>
             <ref bean="SOAPHeaderHandler" />
+            <ref bean="MustUnderstandSOAPHeaderHandler" />
             <ref bean="TransactionHandler" />
         </jaxws:handlers>
     </jaxws:endpoint>
