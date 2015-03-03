@@ -45,6 +45,9 @@ import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryP
 import gov.hhs.fha.nhinc.patientdiscovery.adapter.proxy.AdapterPatientDiscoveryProxyObjectFactory;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201306UV02EventDescriptionBuilder;
+import ihe.iti.xcpd._2009.PatientLocationQueryFault;
+import ihe.iti.xcpd._2009.PatientLocationQueryRequestType;
+import ihe.iti.xcpd._2009.PatientLocationQueryResponseType;
 
 import java.lang.reflect.Method;
 
@@ -63,6 +66,19 @@ public class PassthroughInboundPatientDiscoveryTest {
     public void hasInboundProcessingEvent() throws Exception {
         Class<PassthroughInboundPatientDiscovery> clazz = PassthroughInboundPatientDiscovery.class;
         Method method = clazz.getMethod("respondingGatewayPRPAIN201305UV02", PRPAIN201305UV02.class,
+                AssertionType.class);
+        InboundProcessingEvent annotation = method.getAnnotation(InboundProcessingEvent.class);
+        assertNotNull(annotation);
+        assertEquals(PRPAIN201305UV02EventDescriptionBuilder.class, annotation.beforeBuilder());
+        assertEquals(PRPAIN201306UV02EventDescriptionBuilder.class, annotation.afterReturningBuilder());
+        assertEquals("Patient Discovery", annotation.serviceType());
+        assertEquals("1.0", annotation.version());
+    }
+    
+    @Test
+    public void hasInboundProcessingEventPLQ() throws Exception {
+        Class<PassthroughInboundPatientDiscovery> clazz = PassthroughInboundPatientDiscovery.class;
+        Method method = clazz.getMethod("respondingGatewayPatientLocationQuery", PatientLocationQueryRequestType.class,
                 AssertionType.class);
         InboundProcessingEvent annotation = method.getAnnotation(InboundProcessingEvent.class);
         assertNotNull(annotation);
@@ -160,5 +176,28 @@ public class PassthroughInboundPatientDiscoveryTest {
 
         verify(auditLogger, never()).auditAdapter201306(any(PRPAIN201306UV02.class), any(AssertionType.class),
                 any(String.class));
+    }
+    
+    @Test
+    public void passthroughInboundPatientDiscoveryPLQTest() throws PatientDiscoveryException, PatientLocationQueryFault {
+    	PatientLocationQueryRequestType request = new PatientLocationQueryRequestType();
+    	AssertionType assertion = new AssertionType();
+        PatientLocationQueryResponseType expectedResponse = new PatientLocationQueryResponseType();
+
+        AdapterPatientDiscoveryProxyObjectFactory adapterFactory = mock(AdapterPatientDiscoveryProxyObjectFactory.class);
+        AdapterPatientDiscoveryProxy adapterProxy = mock(AdapterPatientDiscoveryProxy.class);
+        PatientDiscoveryAuditLogger auditLogger = mock(PatientDiscoveryAuditLogger.class);
+
+        when(adapterFactory.create()).thenReturn(adapterProxy);
+
+        when(adapterProxy.respondingGatewayPatientLocationQuery(any(PatientLocationQueryRequestType.class), any(AssertionType.class))).thenReturn(expectedResponse);
+
+        PassthroughInboundPatientDiscovery passthroughPatientDiscovery = new PassthroughInboundPatientDiscovery(
+                adapterFactory, auditLogger);
+
+        PatientLocationQueryResponseType actualResponse = passthroughPatientDiscovery
+        		.respondingGatewayPatientLocationQuery(request, assertion);
+
+        assertSame(expectedResponse, actualResponse);
     }
 }

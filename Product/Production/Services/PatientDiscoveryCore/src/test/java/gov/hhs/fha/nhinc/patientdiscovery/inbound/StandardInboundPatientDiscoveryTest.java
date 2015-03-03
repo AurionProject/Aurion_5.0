@@ -42,6 +42,10 @@ import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryAuditLogger;
 import gov.hhs.fha.nhinc.patientdiscovery.PatientDiscoveryException;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201305UV02EventDescriptionBuilder;
 import gov.hhs.fha.nhinc.patientdiscovery.aspect.PRPAIN201306UV02EventDescriptionBuilder;
+import gov.hhs.fha.nhinc.patientlocationquery.PatientLocationQueryProcessor;
+import ihe.iti.xcpd._2009.PatientLocationQueryFault;
+import ihe.iti.xcpd._2009.PatientLocationQueryRequestType;
+import ihe.iti.xcpd._2009.PatientLocationQueryResponseType;
 
 import java.lang.reflect.Method;
 
@@ -69,18 +73,32 @@ public class StandardInboundPatientDiscoveryTest {
     }
     
     @Test
+    public void hasInboundProcessingEventPLQ() throws Exception {
+        Class<StandardInboundPatientDiscovery> clazz = StandardInboundPatientDiscovery.class;
+        Method method = clazz.getMethod("respondingGatewayPatientLocationQuery", 
+        		PatientLocationQueryRequestType.class, AssertionType.class);
+        InboundProcessingEvent annotation = method.getAnnotation(InboundProcessingEvent.class);
+        assertNotNull(annotation);
+        assertEquals(PRPAIN201305UV02EventDescriptionBuilder.class, annotation.beforeBuilder());
+        assertEquals(PRPAIN201306UV02EventDescriptionBuilder.class, annotation.afterReturningBuilder());
+        assertEquals("Patient Discovery", annotation.serviceType());
+        assertEquals("1.0", annotation.version());
+    }
+    
+    @Test
     public void standardInboundPatientDiscovery() throws PatientDiscoveryException {
         PRPAIN201305UV02 request = new PRPAIN201305UV02();
         AssertionType assertion = new AssertionType();
         PRPAIN201306UV02 expectedResponse = new PRPAIN201306UV02();
 
         PatientDiscovery201305Processor patientDiscoveryProcessor = mock(PatientDiscovery201305Processor.class);
+        PatientLocationQueryProcessor patientLocationQueryProcessor = mock(PatientLocationQueryProcessor.class);
         PatientDiscoveryAuditLogger auditLogger = mock(PatientDiscoveryAuditLogger.class);
 
         when(patientDiscoveryProcessor.process201305(request, assertion)).thenReturn(expectedResponse);
 
         StandardInboundPatientDiscovery standardPatientDiscovery = new StandardInboundPatientDiscovery(
-                patientDiscoveryProcessor, auditLogger){
+                patientDiscoveryProcessor, patientLocationQueryProcessor, auditLogger){
         	
         	@Override
         	protected boolean isAuditEnabled(String propertyFile, String propertyName) {
@@ -116,12 +134,13 @@ public class StandardInboundPatientDiscoveryTest {
         PRPAIN201306UV02 expectedResponse = new PRPAIN201306UV02();
 
         PatientDiscovery201305Processor patientDiscoveryProcessor = mock(PatientDiscovery201305Processor.class);
+        PatientLocationQueryProcessor patientLocationQueryProcessor = mock(PatientLocationQueryProcessor.class);
         PatientDiscoveryAuditLogger auditLogger = mock(PatientDiscoveryAuditLogger.class);
 
         when(patientDiscoveryProcessor.process201305(request, assertion)).thenReturn(expectedResponse);
 
         StandardInboundPatientDiscovery standardPatientDiscovery = new StandardInboundPatientDiscovery(
-                patientDiscoveryProcessor, auditLogger){
+                patientDiscoveryProcessor, patientLocationQueryProcessor, auditLogger){
         	
         	@Override
         	protected boolean isAuditEnabled(String propertyFile, String propertyName) {
@@ -144,5 +163,30 @@ public class StandardInboundPatientDiscoveryTest {
         verify(auditLogger, never()).auditAdapter201306(eq(actualResponse), eq(assertion),
                 eq(NhincConstants.AUDIT_LOG_INBOUND_DIRECTION));
 
+    }
+    
+    /**
+     * Test for PatientLocationQuery (ITI-56)
+     * @throws PatientDiscoveryException 
+     * @throws PatientLocationQueryFault 
+     */
+    @Test
+    public void standardInboundPatientDiscoveryPLQTest() throws PatientDiscoveryException, PatientLocationQueryFault {
+    	PatientLocationQueryRequestType request = new PatientLocationQueryRequestType();
+    	AssertionType assertion = new AssertionType();
+        PatientLocationQueryResponseType expectedResponse = new PatientLocationQueryResponseType();
+
+        PatientDiscovery201305Processor patientDiscoveryProcessor = mock(PatientDiscovery201305Processor.class);
+        PatientLocationQueryProcessor patientLocationQueryProcessor = mock(PatientLocationQueryProcessor.class);
+        PatientDiscoveryAuditLogger auditLogger = mock(PatientDiscoveryAuditLogger.class);
+
+        when(patientLocationQueryProcessor.processPatientLocationQuery(request, assertion)).thenReturn(expectedResponse);
+
+        StandardInboundPatientDiscovery standardPatientDiscovery = new StandardInboundPatientDiscovery(
+                patientDiscoveryProcessor, patientLocationQueryProcessor, auditLogger);
+        
+        PatientLocationQueryResponseType actualResponse = standardPatientDiscovery.respondingGatewayPatientLocationQuery(request, assertion);
+        
+        assertSame(expectedResponse, actualResponse);
     }
 }
