@@ -710,22 +710,22 @@ public class OpenSAML2ComponentBuilder implements SAMLCompontentBuilder {
         Map<QName, String> userRoleAttributes = new HashMap<QName, String>();
 
         if (code != null) {
-            userRoleAttributes.put(new QName(SamlConstants.HL7_NAMESPACE_URI, SamlConstants.CE_CODE_ID, SamlConstants.HL7_PREFIX), code);
+            userRoleAttributes.put(new QName(SamlConstants.CE_CODE_ID), code);
         }
 
         if (codeSystem != null) {
-            userRoleAttributes.put(new QName(SamlConstants.HL7_NAMESPACE_URI, SamlConstants.CE_CODESYS_ID, SamlConstants.HL7_PREFIX), codeSystem);
+            userRoleAttributes.put(new QName(SamlConstants.CE_CODESYS_ID), codeSystem);
         }
 
         if (codeSystemName != null) {
-            userRoleAttributes.put(new QName(SamlConstants.HL7_NAMESPACE_URI, SamlConstants.CE_CODESYSNAME_ID, SamlConstants.HL7_PREFIX), codeSystemName);
+            userRoleAttributes.put(new QName(SamlConstants.CE_CODESYSNAME_ID), codeSystemName);
         }
 
         if (displayName != null) {
-            userRoleAttributes.put(new QName(SamlConstants.HL7_NAMESPACE_URI, SamlConstants.CE_DISPLAYNAME_ID, SamlConstants.HL7_PREFIX), displayName);
+            userRoleAttributes.put(new QName(SamlConstants.CE_DISPLAYNAME_ID), displayName);
         }
         userRoleAttributes.put(new QName(SamlConstants.HL7_TYPE_NAMESPACE_URI, SamlConstants.HL7_TYPE_LOCAL_PART,
-            SamlConstants.HL7_TYPE_PREFIX), SamlConstants.HL7_TYPE_KEY_VALUE);
+                SamlConstants.HL7_TYPE_PREFIX), SamlConstants.HL7_TYPE_KEY_VALUE);
 
         XSAny attributeValue = createAttributeValue(SamlConstants.HL7_NAMESPACE_URI, name, SamlConstants.HL7_PREFIX, userRoleAttributes);
         return attributeValue;
