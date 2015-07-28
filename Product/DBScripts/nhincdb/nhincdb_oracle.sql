@@ -30,14 +30,14 @@ CREATE TABLE nhincuser.auditrepository
 CREATE TABLE nhincuser.advanced_audit
 (
     audit_id number NOT NULL,
-    service_name varchar2(64),
-    subsystem varchar2(16),
-    message_direction varchar2(8),
-    message_id varchar2(96),
-    user_name varchar2(64),
-    user_roles varchar2(64),
-    source_system varchar2(64),
-    source_community varchar2(64),
+    service_name varchar2(256),
+    subsystem varchar2(256),
+    message_direction varchar2(256),
+    message_id varchar2(256),
+    user_name varchar2(256),
+    user_roles varchar2(256),
+    source_system varchar2(256),
+    source_community varchar2(256),
     query_params CLOB,
     message_audited CLOB,
     PRIMARY KEY (audit_id)
